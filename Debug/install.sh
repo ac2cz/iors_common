@@ -11,4 +11,4 @@ if [ ! -d $INC_DIR ]; then
 fi
 
 cp ../inc/*.h /usr/local/include/iors_common
-cp libiors_common.so /usr/local/lib/iors_common
+cp libiors_common.a /usr/local/lib/iors_common
