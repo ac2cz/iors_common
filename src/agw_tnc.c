@@ -86,7 +86,7 @@ int tnc_connect(char *addr, int port, int rate, int max_frames) {
 	}
 
 	if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-		debug_print("\n Error : Connect Failed \n");
+		debug_print("\n Direwolf not running : Connect Failed \n");
 		return EXIT_FAILURE;
 	}
 
@@ -400,19 +400,20 @@ void *tnc_listen_process(void * arg) {
 	if (listen_thread_called) {
 		error_print("Thread already started.  Exiting: %s\n", name);
 	}
-	listen_thread_called++;
+	listen_thread_called = true;
 	debug_print("Starting Thread: %s\n", name);
 
-	while (1) {
+	while (listen_thread_called) {
 
 		int err = tnc_receive_packet();
-		if (err != 0) {
-			printf("Data!!\n");
+		if (err != EXIT_SUCCESS) {
+			debug_print("%s: No Data received\n",name);
+			listen_thread_called = false;
 		}
 	}
 
 	debug_print("Exiting Thread: %s\n", name);
-	listen_thread_called--;
+	listen_thread_called = false;
 }
 
 void print_header(struct t_agw_header *header) {
@@ -450,8 +451,8 @@ int tnc_receive_packet() {
 	header = receive_circular_buffer[next_frame_ptr].header;
 
 	if (n != sizeof(header)) {
-		error_print ("Read error, received %d command bytes.\n", n);
-		exit (EXIT_FAILURE);
+		debug_print ("TNC Read failed, received %d command bytes.\n", n);
+		return (EXIT_FAILURE);
 	}
 
 	/* If this asset fails then we are likely receiving frames that are longer than AX25_MAX_DATA_LEN */
@@ -474,7 +475,7 @@ int tnc_receive_packet() {
 
 		if (n != header.data_len) {
 			error_print ("Read error, client received %d data bytes when %d expected.  Terminating.\n", n, header.data_len);
-			exit (1);
+			exit (EXIT_FAILURE);
 		}
 		if (debug_rx_raw_frames && header.data_kind != 'T')
 			print_data(receive_circular_buffer[next_frame_ptr].data, header.data_len);
