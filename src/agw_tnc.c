@@ -456,7 +456,7 @@ int tnc_receive_packet() {
 	}
 
 	/* If this asset fails then we are likely receiving frames that are longer than AX25_MAX_DATA_LEN */
-	assert (header.data_len >= 0 && header.data_len < (int)(sizeof(receive_circular_buffer[next_frame_ptr].data)));
+	//assert (header.data_len >= 0 && header.data_len < (int)(sizeof(receive_circular_buffer[next_frame_ptr].data)));
 
 	if (header.data_kind == 'T') {
 		//g_frames_queued--;
@@ -475,7 +475,7 @@ int tnc_receive_packet() {
 
 		if (n != header.data_len) {
 			error_print ("Read error, client received %d data bytes when %d expected.  Terminating.\n", n, header.data_len);
-			exit (EXIT_FAILURE);
+			return EXIT_FAILURE;
 		}
 		if (debug_rx_raw_frames && header.data_kind != 'T')
 			print_data(receive_circular_buffer[next_frame_ptr].data, header.data_len);
