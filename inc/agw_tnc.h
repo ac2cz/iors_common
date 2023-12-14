@@ -67,6 +67,7 @@ void print_data(unsigned char *data, int len);
 
 /* Listen to the TNC and store any received packets in a queue. */
 void *tnc_listen_process(void * arg);
+void exit_tnc_listen_process();
 int get_next_frame(int frame_num, struct t_agw_frame_ptr *frame);
 
 #endif /* AGW_TNC_H_ */

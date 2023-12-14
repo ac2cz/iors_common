@@ -416,6 +416,10 @@ void *tnc_listen_process(void * arg) {
 	listen_thread_called = false;
 }
 
+void exit_tnc_listen_process() {
+	listen_thread_called = false;
+}
+
 void print_header(struct t_agw_header *header) {
 	// print something
 	debug_print ("Port [%d] Kind %c Pid %02X From:", header->portx, header->data_kind, header->pid & 0xff);
