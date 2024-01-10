@@ -34,9 +34,11 @@
 #define AGW_PORT2 8002
 #define AGW_PORT 8000
 #define IORS_PORT 8010
+#define MAX_CONFIG_LINE_LENGTH 128
 
 extern int g_common_bit_rate; /* the bit rate of the TNC - 1200 4800 9600. Change actual value in DireWolf) */
 extern int g_common_max_frames_in_tx_buffer;
 extern int g_common_frames_queued;
+extern char g_iors_last_command_time_path[MAX_FILE_PATH_LEN];
 
 #endif /* COMMON_CONFIG_H_ */

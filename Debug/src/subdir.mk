@@ -8,6 +8,7 @@ C_SRCS += \
 ../src/ax25_tools.c \
 ../src/crc.c \
 ../src/hmac_sha256.c \
+../src/iors_command.c \
 ../src/keyfile.c \
 ../src/sha256.c \
 ../src/str_util.c 
@@ -17,6 +18,7 @@ C_DEPS += \
 ./src/ax25_tools.d \
 ./src/crc.d \
 ./src/hmac_sha256.d \
+./src/iors_command.d \
 ./src/keyfile.d \
 ./src/sha256.d \
 ./src/str_util.d 
@@ -26,6 +28,7 @@ OBJS += \
 ./src/ax25_tools.o \
 ./src/crc.o \
 ./src/hmac_sha256.o \
+./src/iors_command.o \
 ./src/keyfile.o \
 ./src/sha256.o \
 ./src/str_util.o 
@@ -43,7 +46,7 @@ src/%.o: ../src/%.c src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/agw_tnc.d ./src/agw_tnc.o ./src/ax25_tools.d ./src/ax25_tools.o ./src/crc.d ./src/crc.o ./src/hmac_sha256.d ./src/hmac_sha256.o ./src/keyfile.d ./src/keyfile.o ./src/sha256.d ./src/sha256.o ./src/str_util.d ./src/str_util.o
+	-$(RM) ./src/agw_tnc.d ./src/agw_tnc.o ./src/ax25_tools.d ./src/ax25_tools.o ./src/crc.d ./src/crc.o ./src/hmac_sha256.d ./src/hmac_sha256.o ./src/iors_command.d ./src/iors_command.o ./src/keyfile.d ./src/keyfile.o ./src/sha256.d ./src/sha256.o ./src/str_util.d ./src/str_util.o
 
 .PHONY: clean-src
 
