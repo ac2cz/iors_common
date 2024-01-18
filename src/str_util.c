@@ -101,5 +101,6 @@ int str_ends_with(const char *str, const char *suffix) {
     size_t lensuffix = strlen(suffix);
     if (lensuffix >  lenstr)
         return -1;
-    return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
+    int rc = strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
+    return rc;
 }

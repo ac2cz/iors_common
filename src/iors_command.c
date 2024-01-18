@@ -24,7 +24,7 @@ int CommandTimeOK(SWCmdUplink *uplink);
 uint32_t last_command_time = 0x0; /* Keep track of the time that the last command was received */
 /* This defines the folder names that can be referenced in commands using the ids in FolderIds
  * TODO - this would be better defined in a file, which could also be uploaded */
-char *FolderIdStrings[] = {"bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod", "sstv_q"};
+char *FolderIdStrings[] = {"sstv_q1", "sstv_q2", "sstv_q3", "bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod"};
 
 void init_commanding(char * last_command_time_file) {
 	strlcpy(g_iors_last_command_time_path, last_command_time_file, sizeof(g_iors_last_command_time_path));

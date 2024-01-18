@@ -78,22 +78,24 @@ typedef enum {
 	 SwCmdPacsatReserved=0
 	,SWCmdPacsatEnablePB			// Args Enable/Disable, Status Period(s), Station Timeout(s)
 	,SWCmdPacsatEnableUplink		// Args Enable/Disable, Status Period(s), Station Timeout(s)
-	,SWCmdPacsatDeleteFile
 	,SWCmdPacsatInstallFile			// Args 32-bit File-Id, Folder-Id  -- TODO - it might be better to move this to Ops
-	,SWCmdPacsatInstallUserFile		// Args 32-bit File-Id, Folder-Id  -- TODO - it might be better to move this to Ops
+	,SWCmdPacsatDeleteFile
+	,SWCmdPacsatDeleteFolder
 	,SwCmdPacsatNumberOfCommands
 }SWPacsatCommands;
 
 /* These are the default writable folders on the USB Stick.  The strings are defined in
  * iors_command.c in a static array FolderIdStrings */
 typedef enum {
-    FolderBin=0
-   ,FolderLib
-   ,FolderCfg
-   ,FolderDir
-   ,FolderUpload
-   ,FolderWod = 5
-   ,FolderSSTVQueue1
+	FolderSSTVQueue1 = 0
+	,FolderSSTVQueue2
+	,FolderSSTVQueue3
+	,FolderBin
+	,FolderLib
+	,FolderCfg = 5
+	,FolderDir
+	,FolderUpload
+	,FolderWod = 8
 } FolderIds;
 
 
