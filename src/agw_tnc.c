@@ -52,7 +52,7 @@ int g_common_max_frames_in_tx_buffer = 5;
 int sockfd = 0;
 
 struct sockaddr_in serv_addr;
-int listen_thread_called = 0;
+static int listen_thread_called = 0;
 
 int next_frame_ptr = 0;
 struct t_agw_frame receive_circular_buffer[MAX_RX_QUEUE_LEN]; // buffer received frames
@@ -414,9 +414,14 @@ void *tnc_listen_process(void * arg) {
 
 	debug_print("Exiting Thread: %s\n", name);
 	listen_thread_called = false;
+	return NULL;
 }
 
-void exit_tnc_listen_process() {
+int tnc_listen_process_running() {
+	return listen_thread_called;
+}
+
+void tnc_exit_listen_process() {
 	listen_thread_called = false;
 }
 
@@ -451,6 +456,7 @@ void print_data(unsigned char *data, int len) {
 int tnc_receive_packet() {
 	struct t_agw_header header;
 	int n = read(sockfd, (char*)(&receive_circular_buffer[next_frame_ptr].header), sizeof(header));
+	if (n == -1) return EXIT_FAILURE;
 
 	header = receive_circular_buffer[next_frame_ptr].header;
 
