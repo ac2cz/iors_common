@@ -17,6 +17,8 @@
 #define MAX_COMMAND_TIME 2082690000 //Dec 31 2035
 #define MIN_COMMAND_TIME 1672462800 //Dec 31 2022
 
+#define EXIT_DUPLICATE 2
+
 /*
  * Following is the data structure representing software uplink commands
  */
@@ -101,6 +103,7 @@ typedef enum {
 
 void init_commanding(char * last_command_time_file);
 char * get_folder_str(int i);
+SWCmdUplink *get_last_command();
 int AuthenticateSoftwareCommand(SWCmdUplink *uplink);
 
 #endif /* IORS_COMMAND_H_ */

@@ -21,10 +21,16 @@ int CommandTimeOK(SWCmdUplink *uplink);
 //int OpsSWCommands(CommandAndArgs *comarg);
 //int TlmSWCommands(CommandAndArgs *comarg);
 
-uint32_t last_command_time = 0x0; /* Keep track of the time that the last command was received */
+static uint32_t last_command_time = 0x0; /* Keep track of the time that the last command was received */
+static SWCmdUplink last_command;
+
 /* This defines the folder names that can be referenced in commands using the ids in FolderIds
  * TODO - this would be better defined in a file, which could also be uploaded */
 char *FolderIdStrings[] = {"sstv_q1", "sstv_q2", "sstv_q3", "bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod"};
+
+SWCmdUplink *get_last_command() {
+	return &last_command;
+}
 
 void init_commanding(char * last_command_time_file) {
 	strlcpy(g_iors_last_command_time_path, last_command_time_file, sizeof(g_iors_last_command_time_path));
@@ -68,6 +74,9 @@ int store_last_command_time() {
 	return EXIT_SUCCESS;
 }
 
+/**
+ * RETURNs EXIT_SUCCESS = 0, EXIT_FAILURE = 1, DUPLICATE = 2
+ */
 int AuthenticateSoftwareCommand(SWCmdUplink *uplink) {
     uint8_t localSecureHash[32];
     int shaOK;
@@ -91,7 +100,7 @@ int AuthenticateSoftwareCommand(SWCmdUplink *uplink) {
         return CommandTimeOK(uplink);
     } else {
        // localErrorCollection.DCTCmdFailAuthenticateCnt++;
-        return false;
+        return EXIT_FAILURE;
     }
 
 }
@@ -117,6 +126,7 @@ int AuthenticateSoftwareCommand(SWCmdUplink *uplink) {
  * not make further changes.  This means that commands should check if they have just executed and
  * do nothing if called again.  e.g. don't change channels if already on that channel.
  *
+ * RETURNs EXIT_SUCCESS = 0, EXIT_FAILURE = 1, DUPLICATE = 2
  */
 int CommandTimeOK(SWCmdUplink *uplink) {
 
@@ -124,13 +134,18 @@ int CommandTimeOK(SWCmdUplink *uplink) {
 		// Then it is likely corrupt, set to zero for this check and take the time from the command
 		last_command_time = 0;
 	}
+	if (last_command_time == uplink->dateTime) {
+		// Duplicate command, ignore
+		debug_print("Duplicate Command: %d Last Command %d\n",uplink->dateTime, last_command_time);
+		return EXIT_DUPLICATE; // DUPLICATE
+	}
     if ((uplink->dateTime + COMMAND_TIME_TOLLERANCE) <= last_command_time) {
     	debug_print("Command: Bad time on command!\n");
     	debug_print("Command: %d Last Command %d\n",uplink->dateTime, last_command_time);
-    	return false;
+    	return EXIT_FAILURE;
     } else {
     	last_command_time = uplink->dateTime;
     	store_last_command_time();
     }
-    return true;
+    return EXIT_SUCCESS;
 }
