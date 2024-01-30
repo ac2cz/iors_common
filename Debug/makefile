@@ -26,7 +26,7 @@ $(wildcard ../makefile.targets) \
 
 
 BUILD_ARTIFACT_NAME := iors_common
-BUILD_ARTIFACT_EXTENSION := a
+BUILD_ARTIFACT_EXTENSION := so
 BUILD_ARTIFACT_PREFIX := lib
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
@@ -36,19 +36,19 @@ BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ART
 all: main-build
 
 # Main-build Target
-main-build: libiors_common.a
+main-build: libiors_common.so
 
 # Tool invocations
-libiors_common.a: $(OBJS) $(USER_OBJS) makefile objects.mk $(OPTIONAL_TOOL_DEPS)
+libiors_common.so: $(OBJS) $(USER_OBJS) makefile objects.mk $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: GCC Archiver'
-	ar -r  "libiors_common.a" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: GCC C Linker'
+	gcc -shared -o "libiors_common.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) libiors_common.a
+	-$(RM) libiors_common.so
 	-@echo ' '
 
 .PHONY: all clean dependents main-build
