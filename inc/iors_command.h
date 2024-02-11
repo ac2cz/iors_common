@@ -64,6 +64,8 @@ typedef enum {
 	,SWCmdOpsPacsatMode = 7
 	,SWCmdOpsExecuteScript = 8
 	,SWCmdOpsTime = 9
+	,SWCmdOpsResetComputer = 10
+	,SWCmdOpsResetRadio = 11
     ,SWCmdOpsNumberOfCommands
 }SWOpsCommands;
 
