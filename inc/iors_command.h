@@ -57,15 +57,16 @@ typedef enum {
 	 SWCmdOpsReserved=0
 	,SWCmdOpsPM1 = 1
 	,SWCmdOpsXBandRepeaterMode = 2
-	,SWCmdOpsSSTVSend = 3
-	,SWCmdOpsSSTVLoop = 4
-	,SWCmdOpsSSTVStop = 5
-	,SWCmdOpsAPRSMode = 6
-	,SWCmdOpsPacsatMode = 7
+	,SWCmdOpsAPRSMode = 3
+	,SWCmdOpsPacsatMode = 6
 	,SWCmdOpsExecuteScript = 8
 	,SWCmdOpsTime = 9
 	,SWCmdOpsResetComputer = 10
 	,SWCmdOpsResetRadio = 11
+	,SWCmdOpsSSTVSend = 20
+	,SWCmdOpsSSTVLoop = 21
+	,SWCmdOpsSSTVStop = 22
+	,SWCmdOpsSSTVPreProcess = 23
     ,SWCmdOpsNumberOfCommands
 }SWOpsCommands;
 
@@ -102,6 +103,24 @@ typedef enum {
 	,FolderWod = 8
 } FolderIds;
 
+typedef enum {
+	MartinM1 = 0
+	,MartinM2
+	,ScottieS1
+	,ScottieS2
+	,Robot36
+	,PasokonP3 = 5
+	,PasokonP5
+	,PasokonP7
+	,PD90
+	,PD120 = 9
+	,PD160
+	,PD180
+	,PD240
+	,PD290
+	,Robot8BW
+	,Robot24BW
+} SSTVModes;
 
 void init_commanding(char * last_command_time_file);
 char * get_folder_str(int i);
