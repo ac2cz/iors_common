@@ -195,7 +195,9 @@ int tnc_send_connected_data(char *from_callsign, char *to_callsign, int channel,
 		printf ("Socket Send error with data, Terminating.\n");
 		return EXIT_FAILURE;
 	}
-	g_common_frames_queued++;
+	/* We don't need to count outstanding frames here because we do not get ahead of the ground station.  We only
+	 * reply to I frames they send.  If a future mode allows us to send a large number of I-data frames then we
+	 * would need to use the Y query to see if we have too many in the queue. */
 //	float n = 8*(sizeof(header) + len ) / (float)g_common_bit_rate;
 //	debug_print(" .. wait %f secs ..\n",n);
 //	usleep((int)(n * 1000000));
