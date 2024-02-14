@@ -195,9 +195,10 @@ int tnc_send_connected_data(char *from_callsign, char *to_callsign, int channel,
 		printf ("Socket Send error with data, Terminating.\n");
 		return EXIT_FAILURE;
 	}
-	float n = 8*(sizeof(header) + len ) / (float)g_common_bit_rate;
+	g_common_frames_queued++;
+//	float n = 8*(sizeof(header) + len ) / (float)g_common_bit_rate;
 //	debug_print(" .. wait %f secs ..\n",n);
-	usleep((int)(n * 1000000));
+//	usleep((int)(n * 1000000));
 
 	return EXIT_SUCCESS;
  }
@@ -385,9 +386,9 @@ int send_raw_packet(char *from_callsign, char *to_callsign, char pid, unsigned c
 	 * y frame data lags.  This prevents us from sending too many frames before we know the status */
 	g_common_frames_queued++;
 //	debug_print("~~~~K Sent :%d\n", g_frames_queued);
-	float n = 8*(sizeof(header) + len+sizeof(raw_hdr) ) / (float)g_common_bit_rate;
+//	float n = 8*(sizeof(header) + len+sizeof(raw_hdr) ) / (float)g_common_bit_rate;
 //	debug_print(" .. wait %f secs ..\n",n);
-	usleep((int)(n * 1000000));
+//	usleep((int)(n * 1000000));
 
 //	float n = 8*(sizeof(header) + len+sizeof(raw_hdr) ) / (float)g_common_bit_rate;
 
