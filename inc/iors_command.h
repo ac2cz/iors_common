@@ -59,10 +59,11 @@ typedef enum {
 	,SWCmdOpsXBandRepeaterMode = 2
 	,SWCmdOpsAPRSMode = 3
 	,SWCmdOpsPacsatMode = 6
-	,SWCmdOpsExecuteScript = 8
+	,SWCmdOpsAntSelect = 8
 	,SWCmdOpsTime = 9
 	,SWCmdOpsResetComputer = 10
 	,SWCmdOpsResetRadio = 11
+	,SWCmdOpsEnableTelemetry = 12
 	,SWCmdOpsSSTVSend = 20
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22
