@@ -64,6 +64,7 @@ typedef enum {
 	,SWCmdOpsResetComputer = 10
 	,SWCmdOpsResetRadio = 11
 	,SWCmdOpsEnableTelemetry = 12
+	,SWCmdOpsEnableTimePkts = 13
 	,SWCmdOpsSSTVSend = 20
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22
