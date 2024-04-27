@@ -26,7 +26,7 @@ static SWCmdUplink last_command;
 
 /* This defines the folder names that can be referenced in commands using the ids in FolderIds
  * TODO - this would be better defined in a file, which could also be uploaded */
-char *FolderIdStrings[] = {"sstv_q1", "sstv_q2", "sstv_q3", "bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod"};
+char *FolderIdStrings[] = {"sstv_q1", "sstv_q2", "sstv_q3", "orbital_positions", "bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod"};
 const int max_folder_strings = 9;
 
 SWCmdUplink *get_last_command() {
