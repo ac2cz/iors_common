@@ -25,7 +25,7 @@ static uint32_t last_command_time = 0x0; /* Keep track of the time that the last
 static SWCmdUplink last_command;
 
 /* This defines the folder names that can be referenced in commands using the ids in FolderIds
- * TODO - this would be better defined in a file, which could also be uploaded */
+ * IMPORTANT - Must also change the enum in iors_command.h that corresponds to this */
 char *FolderIdStrings[] = {"sstv_q1", "sstv_q2", "sstv_q3", "orbital_positions", "bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod"};
 const int max_folder_strings = 9;
 

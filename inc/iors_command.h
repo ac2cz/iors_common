@@ -97,12 +97,13 @@ typedef enum {
 	FolderSSTVQueue1 = 0
 	,FolderSSTVQueue2
 	,FolderSSTVQueue3
+	,FolderOrbitalPositions
 	,FolderBin
 	,FolderLib
-	,FolderCfg = 5
+	,FolderCfg
 	,FolderDir
 	,FolderUpload
-	,FolderWod = 8
+	,FolderWod
 } FolderIds;
 
 typedef enum {
