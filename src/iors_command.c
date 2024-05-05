@@ -47,12 +47,13 @@ int load_last_command_time() {
 	FILE * fd = fopen(g_iors_last_command_time_path, "r");
 	if (fd == NULL) {
 		// no command time file, make a new one
-		fd = fopen(g_iors_last_command_time_path, "w");
-		if (fd == NULL) {
-			error_print("Could not create the time command file\n");
-			// This is not fatal, but we dont remember the command time after restart
-		}
-		fprintf(fd, "%d\n", last_command_time);
+//		fd = fopen(g_iors_last_command_time_path, "w");
+//		if (fd == NULL) {
+//			error_print("Could not create the time command file\n");
+//			// This is not fatal, but we dont remember the command time after restart
+//		}
+		store_last_command_time();
+//		fprintf(fd, "%d\n", last_command_time);
 	} else {
 		char line [ MAX_CONFIG_LINE_LENGTH ]; /* or other suitable maximum line size */
 		fgets ( line, sizeof line, fd ); /* read a line */
@@ -65,14 +66,26 @@ int load_last_command_time() {
 }
 
 int store_last_command_time() {
-	FILE * fd = fopen(g_iors_last_command_time_path, "w");
-	if (fd != NULL) {
-		fprintf(fd, "%d\n", last_command_time);
-	} else {
+	char tmp_filename[MAX_FILE_PATH_LEN];
+	strlcpy(tmp_filename, g_iors_last_command_time_path, sizeof(tmp_filename));
+	strlcat(tmp_filename, ".tmp", sizeof(tmp_filename));
+	FILE * fd = fopen(tmp_filename, "w");
+	if (fd == NULL) {
 		// Not fatal but we will forget the time when we restart
-		error_print("Could not write to the time command file\n");
+		error_print("Could not open the time command file\n");
+		return EXIT_FAILURE;
 	}
+	int rc = fprintf(fd, "%d\n", last_command_time);
+	if (rc <= 0) {
+		error_print("Could not write to the time command file: error %d\n",rc);
+		fclose(fd);
+		return EXIT_FAILURE;
+	}
+
 	fclose(fd);
+	/* Use rename as the last step so that we get the whole new file or stay with the old.  If
+	 * we crash here then we are safer with the last previous command time than with no previous command time. */
+	rename(tmp_filename, g_iors_last_command_time_path);
 	return EXIT_SUCCESS;
 }
 
