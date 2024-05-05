@@ -179,8 +179,8 @@ int tnc_send_connected_data(char *from_callsign, char *to_callsign, int channel,
 		for (int i=0; i < header.data_len; i++) {
 			debug_print("%02x ",bytes[i]);
 		}
+		debug_print(" .. %d bytes\n", header.data_len);
 	}
-	debug_print(" .. %d bytes\n", header.data_len);
 
 	// TODO - Move to calling test function
 //if (g_run_self_test) return EXIT_SUCCESS; /* Dont transmit the bytes in test mode */
