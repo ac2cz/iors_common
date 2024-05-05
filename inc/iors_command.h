@@ -106,6 +106,8 @@ typedef enum {
 	,FolderWod
 } FolderIds;
 
+#define FolderTmp "pacsat/tmp"
+
 typedef enum {
 	MartinM1 = 0
 	,MartinM2
