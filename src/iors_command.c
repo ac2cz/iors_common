@@ -47,21 +47,16 @@ int load_last_command_time() {
 	FILE * fd = fopen(g_iors_last_command_time_path, "r");
 	if (fd == NULL) {
 		// no command time file, make a new one
-//		fd = fopen(g_iors_last_command_time_path, "w");
-//		if (fd == NULL) {
-//			error_print("Could not create the time command file\n");
-//			// This is not fatal, but we dont remember the command time after restart
-//		}
 		store_last_command_time();
-//		fprintf(fd, "%d\n", last_command_time);
 	} else {
 		char line [ MAX_CONFIG_LINE_LENGTH ]; /* or other suitable maximum line size */
 		fgets ( line, sizeof line, fd ); /* read a line */
 		line[strcspn(line,"\n")] = 0; // Move the nul termination to get rid of the new line
 		last_command_time = atol(line);
 		debug_print("Last Command Time was: %d\n",last_command_time);
+		fclose(fd);
 	}
-	fclose(fd);
+
 	return EXIT_SUCCESS;
 }
 
