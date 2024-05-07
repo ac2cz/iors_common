@@ -65,6 +65,7 @@ typedef enum {
 	,SWCmdOpsResetRadio = 11
 	,SWCmdOpsEnableTelemetry = 12
 	,SWCmdOpsEnableTimePkts = 13
+	,SWCmdOpsEnableStatusPkts = 14
 	,SWCmdOpsSSTVSend = 20
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22
@@ -105,8 +106,6 @@ typedef enum {
 	,FolderUpload
 	,FolderWod
 } FolderIds;
-
-#define FolderTmp "pacsat/tmp"
 
 typedef enum {
 	MartinM1 = 0
