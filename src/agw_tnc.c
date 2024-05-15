@@ -375,12 +375,12 @@ int send_raw_packet(char *from_callsign, char *to_callsign, char pid, unsigned c
 
 	int err = send(sockfd, (unsigned char*)(&header), sizeof(header), MSG_NOSIGNAL);
 	if (err == -1) {
-		error_print ("Socket Send error with header, Terminating.\n");
+		error_print ("Socket Send error with header, Not sent.\n");
 		return EXIT_FAILURE;
 	}
 	err = send(sockfd, raw_bytes, len+sizeof(raw_hdr), MSG_NOSIGNAL);
 	if (err == -1) {
-		error_print ("Socket Send error with data, Terminating.\n");
+		error_print ("Socket Send error with data, Not sent.\n");
 		return EXIT_FAILURE;
 	}
 

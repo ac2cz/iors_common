@@ -27,7 +27,7 @@ static SWCmdUplink last_command;
 /* This defines the folder names that can be referenced in commands using the ids in FolderIds
  * IMPORTANT - Must also change the enum in iors_command.h that corresponds to this */
 char *FolderIdStrings[] = {"sstv_q1", "sstv_q2", "sstv_q3", "orbital_positions", "bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod"};
-const int max_folder_strings = 9;
+int SymbolRates[] = {1200,9600};
 
 SWCmdUplink *get_last_command() {
 	return &last_command;
@@ -38,9 +38,14 @@ void init_commanding(char * last_command_time_file) {
 	load_last_command_time();
 }
 
-char * get_folder_str(int i) {
-	if (i < 0 || i > max_folder_strings) return NULL;
+char * get_folder_str(FolderIds i) {
+	if (i < 0 || i > NumberOfFolderIds) return NULL;
 	return FolderIdStrings[i];
+}
+
+int get_symbol_rates(SymbolRateIds i) {
+	if (i < 0 || i > NumberOfSymbolRateIds) return -1;
+	return SymbolRates[i];
 }
 
 int load_last_command_time() {

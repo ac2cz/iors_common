@@ -66,6 +66,8 @@ typedef enum {
 	,SWCmdOpsEnableTelemetry = 12
 	,SWCmdOpsEnableTimePkts = 13
 	,SWCmdOpsEnableStatusPkts = 14
+	,SWCmdOpsResetIors = 15
+	,SWCmdOpsSymbolRate = 16
 	,SWCmdOpsSSTVSend = 20
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22
@@ -105,7 +107,15 @@ typedef enum {
 	,FolderDir
 	,FolderUpload
 	,FolderWod
+	,NumberOfFolderIds
 } FolderIds;
+
+/* These ids are a lookup for the symbolrate strings.  If this is changed then edit the array in iors_control.c */
+typedef enum {
+	Rate1200 = 0
+	,Rate9600
+	,NumberOfSymbolRateIds
+} SymbolRateIds;
 
 typedef enum {
 	MartinM1 = 0
@@ -127,7 +137,8 @@ typedef enum {
 } SSTVModes;
 
 void init_commanding(char * last_command_time_file);
-char * get_folder_str(int i);
+char * get_folder_str(FolderIds i);
+int get_symbol_rates(SymbolRateIds i);
 SWCmdUplink *get_last_command();
 int AuthenticateSoftwareCommand(SWCmdUplink *uplink);
 
