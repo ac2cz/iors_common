@@ -58,7 +58,9 @@ typedef enum {
 	,SWCmdOpsPM1 = 1
 	,SWCmdOpsXBandRepeaterMode = 2
 	,SWCmdOpsAPRSMode = 3
+	,SWCmdOpsSafeMode = 5
 	,SWCmdOpsPacsatMode = 6
+	,SWCmdOpsTelemMode = 7
 	,SWCmdOpsAntSelect = 8
 	,SWCmdOpsTime = 9
 	,SWCmdOpsResetComputer = 10
