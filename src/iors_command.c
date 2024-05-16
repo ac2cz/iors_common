@@ -26,8 +26,61 @@ static SWCmdUplink last_command;
 
 /* This defines the folder names that can be referenced in commands using the ids in FolderIds
  * IMPORTANT - Must also change the enum in iors_command.h that corresponds to this */
-char *FolderIdStrings[] = {"sstv_q1", "sstv_q2", "sstv_q3", "orbital_positions", "bin", "lib", "cfg", "pacsat/dir", "pacsat/upload", "pacsat/wod"};
-int SymbolRates[] = {1200,9600};
+char *FolderIdStrings[] = {
+		"sstv_q1"
+		,"sstv_q2"
+		,"sstv_q3"
+		,"orbital_positions"
+		,"bin"
+		,"lib"
+		,"cfg"
+		,"pacsat/dir"
+		,"pacsat/upload"
+		,"pacsat/wod"
+};
+
+/* This gives user understandable names for the name spaces.  It must match the enum in iors_command.h */
+char *NameSpaceStrings[] = {
+		"-"
+		,"ops"
+		,"telem"
+		,"fs"
+};
+
+/* This gives user understandable names for the OPS Commands.  It must match the enum in iors_command.h */
+char *OpsCommandStrings[] = {
+		"nop"
+		,"pm1"
+		,"xband"
+		,"aprs"
+		,"nop" // 4
+		,"safe"
+		,"fs"
+		,"telem"
+		,"ant-sel"
+		,"time"
+		,"reset-cpu" //10
+		,"reset-radio"
+		,"telem-pkt"
+		,"time-pkt"
+		,"status-pkt"
+		,"reset-ctl"
+		,"pkt-rate" //16
+		,"nop"
+		,"nop"
+		,"nop"
+		,"sstv-send" //20
+		,"sstv-loop"
+		,"sstv-stop"
+		,"sstv-pre"
+		,"nop"
+};
+
+
+int SymbolRates[] = {
+		1200
+		,9600
+};
 
 SWCmdUplink *get_last_command() {
 	return &last_command;
@@ -46,6 +99,28 @@ char * get_folder_str(FolderIds i) {
 int get_symbol_rates(SymbolRateIds i) {
 	if (i < 0 || i > NumberOfSymbolRateIds) return -1;
 	return SymbolRates[i];
+}
+
+int get_namespace_from_str(char *name_space) {
+	int i = 0;
+	for (i = 0; i < SWCmdNumberOfNamespaces; i++) {
+		if (strcasecmp(name_space, NameSpaceStrings[i]) == 0) {
+			return i;
+		}
+	}
+	return SWCmdNSReserved;
+}
+
+int get_command_from_str(SWCommandNameSpace name_space, char * cmd) {
+	if (name_space == SWCmdNSOps) {
+		int i = 0;
+		for (i = 0; i < SWCmdOpsNumberOfCommands; i++) {
+			if (strcasecmp(cmd, OpsCommandStrings[i]) == 0) {
+				return i;
+			}
+		}
+	}
+	return SWCmdOpsReserved;
 }
 
 int load_last_command_time() {

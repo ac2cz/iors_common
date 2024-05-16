@@ -44,8 +44,9 @@ typedef struct  __attribute__((__packed__)){
 typedef enum {
 	 SWCmdNSReserved=0
 	,SWCmdNSOps
-	,SWCmdNSTelemetry
+	,SWCmdNSSSTV
 	,SWCmdNSPacsat
+	,SWCmdNumberOfNamespaces
 }SWCommandNameSpace;
 
 typedef enum {
@@ -141,6 +142,8 @@ typedef enum {
 void init_commanding(char * last_command_time_file);
 char * get_folder_str(FolderIds i);
 int get_symbol_rates(SymbolRateIds i);
+int get_namespace_from_str(char *name_space);
+int get_command_from_str(SWCommandNameSpace name_space, char * cmd);
 SWCmdUplink *get_last_command();
 int AuthenticateSoftwareCommand(SWCmdUplink *uplink);
 
