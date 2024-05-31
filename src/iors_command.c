@@ -37,6 +37,7 @@ char *FolderIdStrings[] = {
 		,"pacsat/dir"
 		,"pacsat/upload"
 		,"pacsat/wod"
+		,"pacsat/log"
 };
 
 /* This gives user understandable names for the name spaces.  It must match the enum in iors_command.h */

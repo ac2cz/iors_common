@@ -93,7 +93,9 @@ typedef enum {
 	,SWCmdPacsatEnableUplink		// Args Enable/Disable, Status Period(s), Station Timeout(s)
 	,SWCmdPacsatInstallFile			// Args 32-bit File-Id, Folder-Id  -- TODO - it might be better to move this to Ops
 	,SWCmdPacsatDeleteFile
-	,SWCmdPacsatDeleteFolder
+	,SWCmdPacsatDeleteFolder = 5
+	,SWCmdPacsatDefaultFileExpiryPeriod
+	,SWCmdPacsatFileExpiryPeriod
 	,SwCmdPacsatNumberOfCommands
 }SWPacsatCommands;
 
@@ -110,6 +112,7 @@ typedef enum {
 	,FolderDir
 	,FolderUpload
 	,FolderWod
+	,FolderLog
 	,NumberOfFolderIds
 } FolderIds;
 

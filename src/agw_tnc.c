@@ -375,7 +375,8 @@ int send_raw_packet(char *from_callsign, char *to_callsign, char pid, unsigned c
 
 	int err = send(sockfd, (unsigned char*)(&header), sizeof(header), MSG_NOSIGNAL);
 	if (err == -1) {
-		error_print ("Socket Send error with header, Not sent.\n");
+		/* Ignore this error because we get it whenever the TNC closes */
+		//error_print ("Socket Send error with header, Not sent.\n");
 		return EXIT_FAILURE;
 	}
 	err = send(sockfd, raw_bytes, len+sizeof(raw_hdr), MSG_NOSIGNAL);
@@ -404,18 +405,18 @@ void *tnc_listen_process(void * arg) {
 		error_print("Thread already started.  Exiting: %s\n", name);
 	}
 	listen_thread_called = true;
-	debug_print("Starting Thread: %s\n", name);
+	//debug_print("Starting Thread: %s\n", name);
 
 	while (listen_thread_called) {
 
 		int err = tnc_receive_packet();
 		if (err != EXIT_SUCCESS) {
-			debug_print("%s: No Data received\n",name);
+			//debug_print("%s: No Data received\n",name);
 			listen_thread_called = false;
 		}
 	}
 
-	debug_print("Exiting Thread: %s\n", name);
+//	debug_print("Exiting Thread: %s\n", name);
 	listen_thread_called = false;
 	return NULL;
 }
@@ -464,7 +465,7 @@ int tnc_receive_packet() {
 	header = receive_circular_buffer[next_frame_ptr].header;
 
 	if (n != sizeof(header)) {
-		debug_print ("TNC Read failed, received %d command bytes.\n", n);
+		//debug_print ("TNC Read failed, received %d command bytes.\n", n);
 		return (EXIT_FAILURE);
 	}
 
