@@ -94,8 +94,13 @@ typedef enum {
 	,SWCmdPacsatInstallFile			// Args 32-bit File-Id, Folder-Id  -- TODO - it might be better to move this to Ops
 	,SWCmdPacsatDeleteFile
 	,SWCmdPacsatDeleteFolder = 5
-	,SWCmdPacsatDefaultFileExpiryPeriod
-	,SWCmdPacsatFileExpiryPeriod
+	,SWCmdPacsatDefaultFileExpiryPeriod // in days
+	,SWCmdPacsatFileExpiryPeriod        // in days
+	,SWCmdPacsatDirMaintPeriod          // in seconds - one node processed per period
+	,SWCmdPacsatFtl0MaintPeriod         // in seconds - Whole upload queue processed per period
+	,SWCmdPacsatFileQueueCheckPeriod = 10         // in seconds - Check all the queues for files to add to the dir
+	,SWCmdPacsatMaxFileSize				// Set the max upload file size in kb
+	,SWCmdPacsatMaxUploadAge			// Set the max age for a file being uploaded.  After this time it is removed from upload queue
 	,SwCmdPacsatNumberOfCommands
 }SWPacsatCommands;
 
