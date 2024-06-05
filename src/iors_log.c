@@ -26,10 +26,16 @@
 #include "str_util.h"
 
 /* Local static variables */
-static int log_level = NO_LOG;
-static char log_folder[MAX_FILE_PATH_LEN];
-static char tmp_filename[MAX_FILE_PATH_LEN];
-static char filename[MAX_FILE_PATH_LEN];
+static int log_level = ERR_LOG;
+//static char log_folder[MAX_FILE_PATH_LEN];
+//static char tmp_filename[MAX_FILE_PATH_LEN];
+//static char filename[MAX_FILE_PATH_LEN];
+
+static char *log_name_str[] = {
+	"log"
+	,"wod"
+	,"err"
+};
 
 static char *event_text[] = {
 	" ",
@@ -59,8 +65,8 @@ static char *event_text[] = {
 	};
 
 /* Forward declarations */
-void log_process_prev_file(char * log_folder);
-int log_append(uint8_t * data, int len);
+void log_process_prev_file(char * log_folder, char *filename);
+int log_append(char *filename, uint8_t * data, int len);
 
 /**
  * log_init()
@@ -71,23 +77,31 @@ int log_append(uint8_t * data, int len);
  * a .tmp file until it is ready to be added to the directory.
  *
  */
-int log_init(enum LOG_LEVEL level, char *folder) {
-	log_level = level;
+int log_init(char *prefix, char *folder, char *filename) {
 	char log_name[25];
 	time_t now = time(0);
-	strftime(log_name, sizeof(log_name), "log%y%m%d%H", gmtime(&now));
-	strlcpy(log_folder, folder, sizeof(filename));
-	strlcpy(filename, folder, sizeof(filename));
-	strlcat(filename,"/",sizeof(filename));
-	strlcat(filename,log_name,sizeof(filename));
-	strlcpy(tmp_filename, filename, sizeof(filename));
-	strlcat(tmp_filename,".tmp",sizeof(tmp_filename));
+	strftime(log_name, sizeof(log_name), "%y%m%d%H", gmtime(&now));
+	strlcpy(filename, folder, MAX_FILE_PATH_LEN);
+	strlcat(filename,"/",MAX_FILE_PATH_LEN);
+	strlcat(filename,prefix,MAX_FILE_PATH_LEN); // put the folder as the first part of the name too
+	strlcat(filename,log_name,MAX_FILE_PATH_LEN);
 
-	log_process_prev_file(folder);
+	log_process_prev_file(folder, filename);
 
 	debug_print("Opening log: %s\n",filename);
 
 	return EXIT_SUCCESS;
+}
+
+char * get_log_name_str(enum LOG_NAME name) {
+	if (name < 0 || name >= NumberOfLogNames)
+		return log_name_str[0];
+	return log_name_str[name];
+}
+
+void log_make_tmp_filename(char *filename, char *tmp_filename) {
+	strlcpy(tmp_filename, filename, MAX_FILE_PATH_LEN);
+	strlcat(tmp_filename,".tmp",MAX_FILE_PATH_LEN);
 }
 
 /**
@@ -97,7 +111,9 @@ int log_init(enum LOG_LEVEL level, char *folder) {
  * issue for the ground station to solve.
  *
  */
-void log_process_prev_file(char * log_folder) {
+void log_process_prev_file(char * log_folder, char *filename) {
+	char tmp_filename[MAX_FILE_PATH_LEN];
+	log_make_tmp_filename(filename, tmp_filename);
 	DIR * d = opendir(log_folder);
 	if (d == NULL) { error_print("** Could not open dir: %s\n",log_folder); return; }
 	struct dirent *de;
@@ -132,27 +148,27 @@ void log_set_level(enum LOG_LEVEL level) {
  * If log level is set below ERR_LOG then nothing is logged.
  *
  */
-void log_err(uint8_t error_code) {
+void log_err(char *filename, uint8_t error_code) {
 	if (log_level < ERR_LOG) return;
 	struct ALOG_err log_err;
 	log_err.event = ALOG_IORS_ERR;
 	log_err.len = sizeof(log_err);
 	log_err.tstamp = time(0);
 	log_err.err_code = error_code;
-	log_append((uint8_t *)&log_err, log_err.len);
+	log_append(filename, (uint8_t *)&log_err, log_err.len);
 }
 
-void log_alog1(enum LOG_EVENT event_code) {
+void log_alog1(char *filename, enum LOG_EVENT event_code) {
 	if (log_level < ERR_LOG) return;
 	struct ALOG_1 log_event;
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
 	log_event.tstamp = time(0);
 	log_event.rxchan = 1;
-	log_append((uint8_t *)&log_event, log_event.len);
+	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog1f(enum LOG_EVENT event_code,
+void log_alog1f(char *filename, enum LOG_EVENT event_code,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6) {
 	if (log_level < ERR_LOG) return;
 	struct ALOG_1F log_event;
@@ -166,10 +182,10 @@ void log_alog1f(enum LOG_EVENT event_code,
 	log_event.var4 = var4;
 	log_event.var5 = var5;
 	log_event.var6 = var6;
-	log_append((uint8_t *)&log_event, log_event.len);
+	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog2(enum LOG_EVENT event_code, char * callsign, uint8_t ssid) {
+void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid) {
 	if (log_level < ERR_LOG) return;
 	struct ALOG_2 log_event;
 	log_event.event = event_code;
@@ -178,10 +194,10 @@ void log_alog2(enum LOG_EVENT event_code, char * callsign, uint8_t ssid) {
 	log_event.rxchan = 1;
 	memcpy(log_event.call, callsign, sizeof(log_event.call));
 	log_event.ssid = ssid;
-	log_append((uint8_t *)&log_event, log_event.len);
+	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog2f(enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
+void log_alog2f(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6) {
 	if (log_level < ERR_LOG) return;
 	struct ALOG_2F log_event;
@@ -197,7 +213,7 @@ void log_alog2f(enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
 	log_event.var6 = var6;
 	memcpy(log_event.call, callsign, sizeof(log_event.call));
 	log_event.ssid = ssid;
-	log_append((uint8_t *)&log_event, log_event.len);
+	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 /**
  * log_append()
@@ -215,7 +231,9 @@ void log_alog2f(enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
  * an event is partially written we will not corrupt the rest of the log.
  *
  */
-int log_append(uint8_t * data, int len) {
+int log_append(char *filename, uint8_t * data, int len) {
+	char tmp_filename[MAX_FILE_PATH_LEN];
+	log_make_tmp_filename(filename, tmp_filename);
 	FILE * outfile = fopen(tmp_filename, "ab");
 	if (outfile == NULL) return EXIT_FAILURE;
 
@@ -237,7 +255,9 @@ int log_append(uint8_t * data, int len) {
  * Add the log file to the pacsat directory and start a new log.  Specifically
  * this is added to the log queue.
  */
-int log_add_to_directory() {
+int log_add_to_directory(char * filename) {
+	char tmp_filename[MAX_FILE_PATH_LEN];
+	log_make_tmp_filename(filename, tmp_filename);
 	debug_print("Finishing log: %s\n",filename);
 	int rc = rename(tmp_filename,filename);
 	if (rc == -1) {
@@ -246,6 +266,9 @@ int log_add_to_directory() {
 	return EXIT_SUCCESS;
 }
 
+/**
+ * Note, this can not read compressed logs
+ */
 void log_debug_print(char * filename) {
 	char buffer[256];
 	struct ALOG_err *alog_err = (struct ALOG_err *)buffer;

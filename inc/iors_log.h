@@ -21,6 +21,13 @@ enum LOG_LEVEL {
 	INFO_LOG
 };
 
+enum LOG_NAME {
+	LOG_NAME
+	,WOD_NAME
+	,ERR_NAME
+	,NumberOfLogNames
+};
+
 enum LOG_EVENT {
 	/* Initial event numbers are historical to match the PACSAT ALOG events */
      ALOG_FTL0_STARTUP = 1		/* ftl0 startup */
@@ -110,16 +117,19 @@ struct ALOG_2F {
 	uint32_t var6;
 } __attribute__ ((__packed__));
 
-int log_init(enum LOG_LEVEL level, char * filepath);
+int log_init(char *prefix, char *folder, char *filename);
+char * get_log_name_str(enum LOG_NAME name);
 void log_set_level(enum LOG_LEVEL level);
-void log_err(uint8_t error_code);
-void log_alog1(enum LOG_EVENT event_code);
-void log_alog1f(enum LOG_EVENT event_code,
+void log_make_tmp_filename(char *filename, char *tmp_filename);
+void log_err(char *filename, uint8_t error_code);
+void log_alog1(char *filename, enum LOG_EVENT event_code);
+void log_alog1f(char *filename, enum LOG_EVENT event_code,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6);
-void log_alog2(enum LOG_EVENT event_code, char * callsign, uint8_t ssid);
-void log_alog2f(enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
+void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid);
+void log_alog2f(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6);
-int log_add_to_directory();
+int log_append(char *filename, uint8_t * data, int len);
+int log_add_to_directory(char *filename);
 
 void log_debug_print(char * filename);
 
