@@ -71,6 +71,7 @@ typedef enum {
 	,SWCmdOpsEnableStatusPkts = 14
 	,SWCmdOpsResetIors = 15
 	,SWCmdOpsSymbolRate = 16
+	,SWCmdOpsRollLogs = 17
 	,SWCmdOpsSSTVSend = 20
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22

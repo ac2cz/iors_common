@@ -100,7 +100,7 @@ int str_ends_with(const char *str, const char *suffix) {
     size_t lenstr = strlen(str);
     size_t lensuffix = strlen(suffix);
     if (lensuffix >  lenstr)
-        return -1;
+        return 0; // return false because it can't have the right ending!
     int rc = strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
     return rc;
 }
