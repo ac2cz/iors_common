@@ -58,6 +58,13 @@ enum LOG_EVENT {
 	,ALOG_NUMBER_OF_EVENTS
 };
 
+enum IORS_LOG_ERRORS {
+	IORS_ERR_UNKNOWN
+	,IORS_ERR_COULD_NOT_STORE_WOD
+	,IORS_ERR_NUMBER_OF_ERRORS
+};
+
+
 /* Every entry has an ALOG Header*/
 struct ALOG_err {
 	uint8_t event;		/* event code */
@@ -117,7 +124,7 @@ struct ALOG_2F {
 	uint32_t var6;
 } __attribute__ ((__packed__));
 
-int log_init(char *prefix, char *folder, char *filename);
+int log_init(char *prefix, char *folder, char *filename, int roll_logs_at_startup);
 char * get_log_name_str(enum LOG_NAME name);
 void log_set_level(enum LOG_LEVEL level);
 void log_make_tmp_filename(char *filename, char *tmp_filename);

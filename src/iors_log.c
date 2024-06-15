@@ -65,7 +65,7 @@ static char *event_text[] = {
 	};
 
 /* Forward declarations */
-void log_process_prev_file(char * log_folder, char *filename);
+void log_process_prev_file(char * log_folder, char *filename, int roll_logs_at_startup);
 int log_append(char *filename, uint8_t * data, int len);
 
 /**
@@ -77,16 +77,17 @@ int log_append(char *filename, uint8_t * data, int len);
  * a .tmp file until it is ready to be added to the directory.
  *
  */
-int log_init(char *prefix, char *folder, char *filename) {
+int log_init(char *prefix, char *folder, char *filename, int roll_logs_at_startup) {
 	char log_name[25];
 	time_t now = time(0);
-	strftime(log_name, sizeof(log_name), "%y%m%d%H", gmtime(&now));
+	strftime(log_name, sizeof(log_name), "%y%m%d%H%M", gmtime(&now)); // If enabled, roll of log if reboot on different min.  Use mins as that is the resolution of the scheduler
 	strlcpy(filename, folder, MAX_FILE_PATH_LEN);
 	strlcat(filename,"/",MAX_FILE_PATH_LEN);
 	strlcat(filename,prefix,MAX_FILE_PATH_LEN); // put the folder as the first part of the name too
 	strlcat(filename,log_name,MAX_FILE_PATH_LEN);
 
-	log_process_prev_file(folder, filename);
+	/* Process any previous logs left over from a crash or other situation */
+	log_process_prev_file(folder, filename, roll_logs_at_startup);
 
 	debug_print("Opening log: %s\n",filename);
 
@@ -111,7 +112,7 @@ void log_make_tmp_filename(char *filename, char *tmp_filename) {
  * issue for the ground station to solve.
  *
  */
-void log_process_prev_file(char * log_folder, char *filename) {
+void log_process_prev_file(char * log_folder, char *filename, int roll_logs_at_startup) {
 	char tmp_filename[MAX_FILE_PATH_LEN];
 	log_make_tmp_filename(filename, tmp_filename);
 	DIR * d = opendir(log_folder);
@@ -125,13 +126,13 @@ void log_process_prev_file(char * log_folder, char *filename) {
 				strlcpy(file_name, log_folder, sizeof(file_name));
 				strlcat(file_name, "/", sizeof(file_name));
 				strlcat(file_name, de->d_name, sizeof(file_name));
-				if (strncmp(file_name, tmp_filename, sizeof(file_name)) == 0) {
-					debug_print("leaving todays log %s\n",de->d_name);
+				if (roll_logs_at_startup && strncmp(file_name, tmp_filename, sizeof(file_name)) == 0) {
+					debug_print("leaving current log %s\n",de->d_name);
 				} else {
 					strlcpy(to_filename, file_name, sizeof(to_filename));
 					to_filename[strlen(to_filename) - 4] = '\0'; // We know this has exactly .tmp at the end, so remove it
 					debug_print("Processing old log file: %s to %s\n",de->d_name, to_filename);
-					rename(file_name,filename);
+					rename(file_name,to_filename);
 				}
 			}
 		}

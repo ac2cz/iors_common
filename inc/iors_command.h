@@ -54,6 +54,7 @@ typedef enum {
     ,SWCmdIntAutosafeMode
 }SWInternalCommands;
 
+/* ANY ADDITIONS HERE MUST GO IN iors_command.c str list */
 typedef enum {
 	 SWCmdOpsReserved=0
 	,SWCmdOpsPM1 = 1
@@ -73,6 +74,8 @@ typedef enum {
 	,SWCmdOpsResetIors = 15
 	,SWCmdOpsSymbolRate = 16
 	,SWCmdOpsRollLogs = 17
+	,SWCmdOpsEnableWod = 18
+	,SWCmdOpsEnableErrorCollection = 19
 	,SWCmdOpsSSTVSend = 20
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22

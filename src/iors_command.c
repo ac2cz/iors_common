@@ -62,14 +62,14 @@ char *OpsCommandStrings[] = {
 		,"time"
 		,"reset-cpu" //10
 		,"reset-radio"
-		,"telem-pkt"
-		,"time-pkt"
-		,"status-pkt"
+		,"enable-telem"
+		,"emable-time"
+		,"enable-status"
 		,"reset-ctl"
 		,"pkt-rate" //16
-		,"nop"
-		,"nop"
-		,"nop"
+		,"roll-log"
+		,"enable-wod"
+		,"enable-err"
 		,"sstv-send" //20
 		,"sstv-loop"
 		,"sstv-stop"
