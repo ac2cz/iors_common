@@ -176,16 +176,16 @@ int AuthenticateSoftwareCommand(SWCmdUplink *uplink) {
                 (uint8_t *) uplink, SW_COMMAND_SIZE,
                 localSecureHash, sizeof(localSecureHash));
     shaOK = (memcmp(localSecureHash, uplink->AuthenticationVector, 32) == 0);
-    if (0) {
-        debug_print("Local: ");
-        int i;
-        for (i=0; i<sizeof(localSecureHash);i++)
-        	debug_print("%x ", localSecureHash[i]);
-        debug_print("\nUplink: ");
-        for (i=0; i<sizeof(uplink->AuthenticationVector);i++)
-        	debug_print("%x ", uplink->AuthenticationVector[i]);
-        debug_print("\n");
-    }
+//    if (0) {
+//        debug_print("Local: ");
+//        int i;
+//        for (i=0; i<sizeof(localSecureHash);i++)
+//        	debug_print("%x ", localSecureHash[i]);
+//        debug_print("\nUplink: ");
+//        for (i=0; i<sizeof(uplink->AuthenticationVector);i++)
+//        	debug_print("%x ", uplink->AuthenticationVector[i]);
+//        debug_print("\n");
+//    }
     if(shaOK){
         uplink->comArg.command = (uplink->comArg.command); // We might have to look to determine if authenticated
         return CommandTimeOK(uplink);

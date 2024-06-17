@@ -55,12 +55,27 @@ enum LOG_EVENT {
 
 	/* Events after this will not be decoded by historical ALOG program */
 	,ALOG_IORS_ERR = 23
+	,ALOG_PROGRAM_EXIT
+	,ALOG_COMMAND
 	,ALOG_NUMBER_OF_EVENTS
 };
 
+/* Errors that we want to report in the log.  We should avoid repeating errors that could fill the log.
+ * Those should be counted and downlinked in the error telemetry.  e.g. number of I2C failures.*/
 enum IORS_LOG_ERRORS {
 	IORS_ERR_UNKNOWN
+	,IORS_ERR_REMOVING_PID_FILE
 	,IORS_ERR_COULD_NOT_STORE_WOD
+	,IORS_ERR_SENDING_PKT
+	,IORS_ERR_SETTING_TIME
+	,IORS_ERR_MAX_RADIO_RETRIES
+	,IORS_ERR_MAX_TNC_RETRIES
+	,IORS_ERR_SSTV_FAILURE
+	,IORS_ERR_PACSAT_FAILURE
+	,IORS_ERR_DIREWOLF_FAILURE
+	,IORS_ERR_PTT_FAILURE
+	,IORS_ERR_TNC_FAILURE
+	,IORS_ERR_CREW_INT_FAILURE
 	,IORS_ERR_NUMBER_OF_ERRORS
 };
 
@@ -129,10 +144,10 @@ char * get_log_name_str(enum LOG_NAME name);
 void log_set_level(enum LOG_LEVEL level);
 void log_make_tmp_filename(char *filename, char *tmp_filename);
 void log_err(char *filename, uint8_t error_code);
-void log_alog1(char *filename, enum LOG_EVENT event_code);
+void log_alog1(char *filename, enum LOG_EVENT event_code, uint16_t var);
 void log_alog1f(char *filename, enum LOG_EVENT event_code,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6);
-void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid);
+void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid, uint16_t var);
 void log_alog2f(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6);
 int log_append(char *filename, uint8_t * data, int len);

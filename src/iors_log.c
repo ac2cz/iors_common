@@ -65,7 +65,7 @@ static char *event_text[] = {
 	};
 
 /* Forward declarations */
-void log_process_prev_file(char * log_folder, char *filename, int roll_logs_at_startup);
+//void log_process_prev_file(char * log_folder, char *filename, int roll_logs_at_startup);
 int log_append(char *filename, uint8_t * data, int len);
 
 /**
@@ -78,18 +78,17 @@ int log_append(char *filename, uint8_t * data, int len);
  *
  */
 int log_init(char *prefix, char *folder, char *filename, int roll_logs_at_startup) {
-	char log_name[25];
-	time_t now = time(0);
-	strftime(log_name, sizeof(log_name), "%y%m%d%H%M", gmtime(&now)); // If enabled, roll of log if reboot on different min.  Use mins as that is the resolution of the scheduler
 	strlcpy(filename, folder, MAX_FILE_PATH_LEN);
 	strlcat(filename,"/",MAX_FILE_PATH_LEN);
 	strlcat(filename,prefix,MAX_FILE_PATH_LEN); // put the folder as the first part of the name too
-	strlcat(filename,log_name,MAX_FILE_PATH_LEN);
 
-	/* Process any previous logs left over from a crash or other situation */
-	log_process_prev_file(folder, filename, roll_logs_at_startup);
+	if (roll_logs_at_startup) {
+		log_add_to_directory(filename);
+	}
+//	/* Process any previous logs left over from a crash or other situation */
+//	log_process_prev_file(folder, filename, roll_logs_at_startup);
 
-	debug_print("Opening log: %s\n",filename);
+	//debug_print("Opening log: %s\n",filename);
 
 	return EXIT_SUCCESS;
 }
@@ -105,39 +104,39 @@ void log_make_tmp_filename(char *filename, char *tmp_filename) {
 	strlcat(tmp_filename,".tmp",MAX_FILE_PATH_LEN);
 }
 
-/**
- * Looks for any previous logs in the folder and add them to the pacsat dir queue.
- * We do that by removing the .tmp extension.
- * Note that it is possible that the file was corrupted as we crashed, but that is an
- * issue for the ground station to solve.
- *
- */
-void log_process_prev_file(char * log_folder, char *filename, int roll_logs_at_startup) {
-	char tmp_filename[MAX_FILE_PATH_LEN];
-	log_make_tmp_filename(filename, tmp_filename);
-	DIR * d = opendir(log_folder);
-	if (d == NULL) { error_print("** Could not open dir: %s\n",log_folder); return; }
-	struct dirent *de;
-	char file_name[MAX_FILE_PATH_LEN];
-	char to_filename[MAX_FILE_PATH_LEN];
-	for (de = readdir(d); de != NULL; de = readdir(d)) {
-		if ((strcmp(de->d_name, ".") != 0) && (strcmp(de->d_name, "..") != 0)) {
-			if (str_ends_with(de->d_name, FILE_TMP)) {
-				strlcpy(file_name, log_folder, sizeof(file_name));
-				strlcat(file_name, "/", sizeof(file_name));
-				strlcat(file_name, de->d_name, sizeof(file_name));
-				if (roll_logs_at_startup && strncmp(file_name, tmp_filename, sizeof(file_name)) == 0) {
-					debug_print("leaving current log %s\n",de->d_name);
-				} else {
-					strlcpy(to_filename, file_name, sizeof(to_filename));
-					to_filename[strlen(to_filename) - 4] = '\0'; // We know this has exactly .tmp at the end, so remove it
-					debug_print("Processing old log file: %s to %s\n",de->d_name, to_filename);
-					rename(file_name,to_filename);
-				}
-			}
-		}
-	}
-}
+///**
+// * Looks for any previous logs in the folder and add them to the pacsat dir queue.
+// * We do that by removing the .tmp extension.
+// * Note that it is possible that the file was corrupted as we crashed, but that is an
+// * issue for the ground station to solve.
+// *
+// */
+//void log_process_prev_file(char * log_folder, char *filename, int roll_logs_at_startup) {
+//	char tmp_filename[MAX_FILE_PATH_LEN];
+//	log_make_tmp_filename(filename, tmp_filename);
+//	DIR * d = opendir(log_folder);
+//	if (d == NULL) { error_print("** Could not open dir: %s\n",log_folder); return; }
+//	struct dirent *de;
+//	char file_name[MAX_FILE_PATH_LEN];
+//	char to_filename[MAX_FILE_PATH_LEN];
+//	for (de = readdir(d); de != NULL; de = readdir(d)) {
+//		if ((strcmp(de->d_name, ".") != 0) && (strcmp(de->d_name, "..") != 0)) {
+//			if (str_ends_with(de->d_name, FILE_TMP)) {
+//				strlcpy(file_name, log_folder, sizeof(file_name));
+//				strlcat(file_name, "/", sizeof(file_name));
+//				strlcat(file_name, de->d_name, sizeof(file_name));
+//				if (roll_logs_at_startup && strncmp(file_name, tmp_filename, sizeof(file_name)) == 0) {
+//					debug_print("leaving current log %s\n",de->d_name);
+//				} else {
+//					strlcpy(to_filename, file_name, sizeof(to_filename));
+//					to_filename[strlen(to_filename) - 4] = '\0'; // We know this has exactly .tmp at the end, so remove it
+//					debug_print("Processing old log file: %s to %s\n",de->d_name, to_filename);
+//					rename(file_name,to_filename);
+//				}
+//			}
+//		}
+//	}
+//}
 
 void log_set_level(enum LOG_LEVEL level) {
 	log_level = level;
@@ -151,21 +150,23 @@ void log_set_level(enum LOG_LEVEL level) {
  */
 void log_err(char *filename, uint8_t error_code) {
 	if (log_level < ERR_LOG) return;
-	struct ALOG_err log_err;
-	log_err.event = ALOG_IORS_ERR;
-	log_err.len = sizeof(log_err);
-	log_err.tstamp = time(0);
-	log_err.err_code = error_code;
-	log_append(filename, (uint8_t *)&log_err, log_err.len);
+	struct ALOG_1 log_event;
+	log_event.event = ALOG_IORS_ERR;
+	log_event.len = sizeof(log_event);
+	log_event.tstamp = time(0);
+	log_event.rxchan = 0;
+	log_event.serial_no = error_code;
+	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog1(char *filename, enum LOG_EVENT event_code) {
+void log_alog1(char *filename, enum LOG_EVENT event_code, uint16_t var) {
 	if (log_level < ERR_LOG) return;
 	struct ALOG_1 log_event;
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
 	log_event.tstamp = time(0);
-	log_event.rxchan = 1;
+	log_event.rxchan = 0;
+	log_event.serial_no = var;
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
@@ -176,7 +177,7 @@ void log_alog1f(char *filename, enum LOG_EVENT event_code,
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
 	log_event.tstamp = time(0);
-	log_event.rxchan = 1;
+	log_event.rxchan = 0;
 	log_event.var1 = var1;
 	log_event.var2 = var2;
 	log_event.var3 = var3;
@@ -186,13 +187,14 @@ void log_alog1f(char *filename, enum LOG_EVENT event_code,
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid) {
+void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid, uint16_t var) {
 	if (log_level < ERR_LOG) return;
 	struct ALOG_2 log_event;
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
 	log_event.tstamp = time(0);
-	log_event.rxchan = 1;
+	log_event.serial_no = var;
+	log_event.rxchan = 0;
 	memcpy(log_event.call, callsign, sizeof(log_event.call));
 	log_event.ssid = ssid;
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
@@ -205,7 +207,7 @@ void log_alog2f(char *filename, enum LOG_EVENT event_code, char * callsign, uint
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
 	log_event.tstamp = time(0);
-	log_event.rxchan = 1;
+	log_event.rxchan = 0;
 	log_event.var1 = var1;
 	log_event.var2 = var2;
 	log_event.var3 = var3;
@@ -253,14 +255,20 @@ int log_append(char *filename, uint8_t * data, int len) {
 
 /**
  * log_add_to_directory()
- * Add the log file to the pacsat directory and start a new log.  Specifically
- * this is added to the log queue.
+ * Add the log file to the pacsat directory by removing the tmp extension and giving it a timestamp.
  */
 int log_add_to_directory(char * filename) {
+	char log_name[25];
+	time_t now = time(0);
+	strftime(log_name, sizeof(log_name), "%y%m%d%H%M", gmtime(&now)); // If enabled, roll of log if reboot on different min.  Use mins as that is the resolution of the scheduler
+
 	char tmp_filename[MAX_FILE_PATH_LEN];
+	char dir_filename[MAX_FILE_PATH_LEN];
 	log_make_tmp_filename(filename, tmp_filename);
-	debug_print("Finishing log: %s\n",filename);
-	int rc = rename(tmp_filename,filename);
+	strlcpy(dir_filename, filename,MAX_FILE_PATH_LEN);
+	strlcat(dir_filename,log_name,MAX_FILE_PATH_LEN);
+	debug_print("Adding %s log to dir as: %s\n",filename, dir_filename);
+	int rc = rename(tmp_filename,dir_filename);
 	if (rc == -1) {
 		return EXIT_FAILURE;
 	}
