@@ -24,6 +24,6 @@ extern uint8_t hmac_sha_key[AUTH_KEY_SIZE];
 uint32_t key_checksum(uint8_t *key);
 
 int key_load(char *);
-int test_key_save(void);
+int test_key_save(char * key_path);
 
 #endif /* KEYFILE_H_ */

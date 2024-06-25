@@ -52,12 +52,13 @@ int key_load(char * key_path) {
     	return EXIT_FAILURE; // nothing was read
     }
 
+    debug_print("Loaded keyfile: %s\n",key_path);
     memcpy(hmac_sha_key, key, AUTH_KEY_SIZE);
     return EXIT_SUCCESS;
 }
 
-int test_key_save(void) {
-	FILE * outfile = fopen(g_iors_command_keyfile_path, "wb");
+int test_key_save(char * key_path) {
+	FILE * outfile = fopen(key_path, "wb");
 	if (outfile == NULL) return EXIT_FAILURE;
 
 	for (int i=0; i<AUTH_KEY_SIZE; i++) {

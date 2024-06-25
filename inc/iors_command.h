@@ -80,6 +80,7 @@ typedef enum {
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22
 	,SWCmdOpsSSTVPreProcess = 23
+	,SWCmdOpsChangeCommandKey = 25
     ,SWCmdOpsNumberOfCommands
 }SWOpsCommands;
 
