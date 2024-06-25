@@ -40,5 +40,6 @@ extern int g_common_bit_rate; /* the bit rate of the TNC - 1200 4800 9600. Chang
 extern int g_common_max_frames_in_tx_buffer;
 extern int g_common_frames_queued;
 extern char g_iors_last_command_time_path[MAX_FILE_PATH_LEN];
+extern char g_iors_command_keyfile_path[MAX_FILE_PATH_LEN];
 
 #endif /* COMMON_CONFIG_H_ */
