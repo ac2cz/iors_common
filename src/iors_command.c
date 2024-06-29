@@ -54,7 +54,7 @@ char *OpsCommandStrings[] = {
 		,"pm1"
 		,"xband"
 		,"aprs"
-		,"nop" // 4
+		,"crew" // 4
 		,"safe"
 		,"fs"
 		,"telem"
@@ -63,17 +63,18 @@ char *OpsCommandStrings[] = {
 		,"reset-cpu" //10
 		,"reset-radio"
 		,"enable-telem"
-		,"emable-time"
+		,"enable-time"
 		,"enable-status"
-		,"reset-ctl"
+		,"reset-iors"
 		,"pkt-rate" //16
 		,"roll-log"
 		,"enable-wod"
 		,"enable-err"
-		,"sstv-send" //20
+		,"sstv-set-mode" //20
 		,"sstv-loop"
 		,"sstv-stop"
 		,"sstv-pre"
+		,"cmd-key"
 		,"nop"
 };
 

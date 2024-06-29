@@ -76,7 +76,7 @@ typedef enum {
 	,SWCmdOpsRollLogs = 17
 	,SWCmdOpsEnableWod = 18
 	,SWCmdOpsEnableErrorCollection = 19
-	,SWCmdOpsSSTVSend = 20
+	,SWCmdOpsSSTVSetMode = 20
 	,SWCmdOpsSSTVLoop = 21
 	,SWCmdOpsSSTVStop = 22
 	,SWCmdOpsSSTVPreProcess = 23
