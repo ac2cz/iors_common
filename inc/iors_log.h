@@ -145,11 +145,11 @@ char * get_log_name_str(enum LOG_NAME name);
 void log_set_level(enum LOG_LEVEL level);
 void log_make_tmp_filename(char *filename, char *tmp_filename);
 void log_err(char *filename, uint8_t error_code);
-void log_alog1(char *filename, enum LOG_EVENT event_code, uint16_t var);
-void log_alog1f(char *filename, enum LOG_EVENT event_code,
+void log_alog1(int level, char *filename, enum LOG_EVENT event_code, uint16_t var);
+void log_alog1f(int level, char *filename, enum LOG_EVENT event_code,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6);
-void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid, uint16_t var);
-void log_alog2f(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
+void log_alog2(int level, char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid, uint16_t var);
+void log_alog2f(int level, char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6);
 int log_append(char *filename, uint8_t * data, int len);
 int log_add_to_directory(char *filename);

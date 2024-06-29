@@ -159,8 +159,8 @@ void log_err(char *filename, uint8_t error_code) {
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog1(char *filename, enum LOG_EVENT event_code, uint16_t var) {
-	if (log_level < ERR_LOG) return;
+void log_alog1(int level, char *filename, enum LOG_EVENT event_code, uint16_t var) {
+	if (level > log_level) return;
 	struct ALOG_1 log_event;
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
@@ -170,9 +170,9 @@ void log_alog1(char *filename, enum LOG_EVENT event_code, uint16_t var) {
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog1f(char *filename, enum LOG_EVENT event_code,
+void log_alog1f(int level, char *filename, enum LOG_EVENT event_code,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6) {
-	if (log_level < ERR_LOG) return;
+	if (level > log_level) return;
 	struct ALOG_1F log_event;
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
@@ -187,8 +187,8 @@ void log_alog1f(char *filename, enum LOG_EVENT event_code,
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid, uint16_t var) {
-	if (log_level < ERR_LOG) return;
+void log_alog2(int level, char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid, uint16_t var) {
+	if (level > log_level) return;
 	struct ALOG_2 log_event;
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
@@ -200,9 +200,9 @@ void log_alog2(char *filename, enum LOG_EVENT event_code, char * callsign, uint8
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
-void log_alog2f(char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
+void log_alog2f(int level, char *filename, enum LOG_EVENT event_code, char * callsign, uint8_t ssid,
 		uint32_t var1,uint32_t var2,uint32_t var3,uint32_t var4,uint32_t var5,uint32_t var6) {
-	if (log_level < ERR_LOG) return;
+	if (level > log_level) return;
 	struct ALOG_2F log_event;
 	log_event.event = event_code;
 	log_event.len = sizeof(log_event);
