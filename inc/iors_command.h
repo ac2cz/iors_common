@@ -159,6 +159,7 @@ int get_symbol_rates(SymbolRateIds i);
 int get_namespace_from_str(char *name_space);
 int get_command_from_str(SWCommandNameSpace name_space, char * cmd);
 SWCmdUplink *get_last_command();
+int AuthenticatePacket(uint32_t date_time_in_packet, uint8_t * uplink, int pkt_len, uint8_t *auth_vector);
 int AuthenticateSoftwareCommand(SWCmdUplink *uplink);
 
 #endif /* IORS_COMMAND_H_ */

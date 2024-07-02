@@ -36,6 +36,8 @@
 #define IORS_PORT 8010
 #define MAX_CONFIG_LINE_LENGTH 128
 
+#define CLOCK_2024_01_01 1704085200
+
 extern int g_common_bit_rate; /* the bit rate of the TNC - 1200 4800 9600. Change actual value in DireWolf) */
 extern int g_common_max_frames_in_tx_buffer;
 extern int g_common_frames_queued;

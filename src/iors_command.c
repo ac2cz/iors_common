@@ -17,9 +17,7 @@
 /* Forwards */
 int load_last_command_time();
 int store_last_command_time();
-int CommandTimeOK(SWCmdUplink *uplink);
-//int OpsSWCommands(CommandAndArgs *comarg);
-//int TlmSWCommands(CommandAndArgs *comarg);
+int CommandTimeOK(uint32_t dateTime);
 
 static uint32_t last_command_time = 0x0; /* Keep track of the time that the last command was received */
 static SWCmdUplink last_command;
@@ -167,33 +165,57 @@ int store_last_command_time() {
 }
 
 /**
+ * Authenticate a packet that contains a 32 bit date time, an arbitrary number of bytes
+ * and a 32 byte authentication vector.
+ * The vector is calculated with the 32 byte authentication key
+ *
+ */
+int AuthenticatePacket(uint32_t date_time_in_packet, uint8_t * uplink, int pkt_len, uint8_t *auth_vector) {
+	uint8_t localSecureHash[32];
+	    int shaOK;
+
+	    hmac_sha256(hmac_sha_key, AUTH_KEY_SIZE,
+	                uplink, pkt_len,
+	                localSecureHash, sizeof(localSecureHash));
+	    shaOK = (memcmp(localSecureHash, auth_vector, 32) == 0);
+
+	    if(shaOK){
+	        return CommandTimeOK(date_time_in_packet);
+	    } else {
+	        return EXIT_FAILURE;
+	    }
+}
+
+/**
  * RETURNs EXIT_SUCCESS = 0, EXIT_FAILURE = 1, DUPLICATE = 2
  */
 int AuthenticateSoftwareCommand(SWCmdUplink *uplink) {
-    uint8_t localSecureHash[32];
-    int shaOK;
+	return AuthenticatePacket(uplink->dateTime, (uint8_t *)uplink, SW_COMMAND_SIZE,uplink->AuthenticationVector);
 
-    hmac_sha256(hmac_sha_key, AUTH_KEY_SIZE,
-                (uint8_t *) uplink, SW_COMMAND_SIZE,
-                localSecureHash, sizeof(localSecureHash));
-    shaOK = (memcmp(localSecureHash, uplink->AuthenticationVector, 32) == 0);
-//    if (0) {
-//        debug_print("Local: ");
-//        int i;
-//        for (i=0; i<sizeof(localSecureHash);i++)
-//        	debug_print("%x ", localSecureHash[i]);
-//        debug_print("\nUplink: ");
-//        for (i=0; i<sizeof(uplink->AuthenticationVector);i++)
-//        	debug_print("%x ", uplink->AuthenticationVector[i]);
-//        debug_print("\n");
+//    uint8_t localSecureHash[32];
+//    int shaOK;
+//
+//    hmac_sha256(hmac_sha_key, AUTH_KEY_SIZE,
+//                (uint8_t *) uplink, SW_COMMAND_SIZE,
+//                localSecureHash, sizeof(localSecureHash));
+//    shaOK = (memcmp(localSecureHash, uplink->AuthenticationVector, 32) == 0);
+////    if (0) {
+////        debug_print("Local: ");
+////        int i;
+////        for (i=0; i<sizeof(localSecureHash);i++)
+////        	debug_print("%x ", localSecureHash[i]);
+////        debug_print("\nUplink: ");
+////        for (i=0; i<sizeof(uplink->AuthenticationVector);i++)
+////        	debug_print("%x ", uplink->AuthenticationVector[i]);
+////        debug_print("\n");
+////    }
+//    if(shaOK){
+//        uplink->comArg.command = (uplink->comArg.command); // We might have to look to determine if authenticated
+//        return CommandTimeOK(uplink->dateTime);
+//    } else {
+//       // localErrorCollection.DCTCmdFailAuthenticateCnt++;
+//        return EXIT_FAILURE;
 //    }
-    if(shaOK){
-        uplink->comArg.command = (uplink->comArg.command); // We might have to look to determine if authenticated
-        return CommandTimeOK(uplink);
-    } else {
-       // localErrorCollection.DCTCmdFailAuthenticateCnt++;
-        return EXIT_FAILURE;
-    }
 
 }
 
@@ -220,23 +242,23 @@ int AuthenticateSoftwareCommand(SWCmdUplink *uplink) {
  *
  * RETURNs EXIT_SUCCESS = 0, EXIT_FAILURE = 1, DUPLICATE = 2
  */
-int CommandTimeOK(SWCmdUplink *uplink) {
+int CommandTimeOK(uint32_t dateTime) {
 
 	if (last_command_time > MAX_COMMAND_TIME || last_command_time < MIN_COMMAND_TIME) {
 		// Then it is likely corrupt, set to zero for this check and take the time from the command
 		last_command_time = 0;
 	}
-	if (last_command_time == uplink->dateTime) {
+	if (last_command_time == dateTime) {
 		// Duplicate command, ignore
-		debug_print("Duplicate Command: %d Last Command %d\n",uplink->dateTime, last_command_time);
+		debug_print("Duplicate Command: %d Last Command %d\n",dateTime, last_command_time);
 		return EXIT_DUPLICATE; // DUPLICATE
 	}
-    if ((uplink->dateTime + COMMAND_TIME_TOLLERANCE) <= last_command_time) {
+    if ((dateTime + COMMAND_TIME_TOLLERANCE) <= last_command_time) {
     	debug_print("Command: Bad time on command!\n");
-    	debug_print("Command: %d Last Command %d\n",uplink->dateTime, last_command_time);
+    	debug_print("Command: %d Last Command %d\n",dateTime, last_command_time);
     	return EXIT_FAILURE;
     } else {
-    	last_command_time = uplink->dateTime;
+    	last_command_time = dateTime;
     	store_last_command_time();
     }
     return EXIT_SUCCESS;
