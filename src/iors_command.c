@@ -172,18 +172,27 @@ int store_last_command_time() {
  */
 int AuthenticatePacket(uint32_t date_time_in_packet, uint8_t * uplink, int pkt_len, uint8_t *auth_vector) {
 	uint8_t localSecureHash[32];
-	    int shaOK;
+	int shaOK;
 
-	    hmac_sha256(hmac_sha_key, AUTH_KEY_SIZE,
-	                uplink, pkt_len,
-	                localSecureHash, sizeof(localSecureHash));
-	    shaOK = (memcmp(localSecureHash, auth_vector, 32) == 0);
-
-	    if(shaOK){
-	        return CommandTimeOK(date_time_in_packet);
-	    } else {
-	        return EXIT_FAILURE;
+	hmac_sha256(hmac_sha_key, AUTH_KEY_SIZE,
+			uplink, pkt_len,
+			localSecureHash, sizeof(localSecureHash));
+	shaOK = (memcmp(localSecureHash, auth_vector, 32) == 0);
+	    if (0) {
+	        debug_print("Local:  ");
+	        int i;
+	        for (i=0; i<sizeof(localSecureHash);i++)
+	        	debug_print("%x ", localSecureHash[i]);
+	        debug_print("\nUplink: ");
+	        for (i=0; i<sizeof(localSecureHash);i++)
+	        	debug_print("%x ", auth_vector[i]);
+	        debug_print("\n");
 	    }
+	if(shaOK){
+		return CommandTimeOK(date_time_in_packet);
+	} else {
+		return EXIT_FAILURE;
+	}
 }
 
 /**
