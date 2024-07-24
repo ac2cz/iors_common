@@ -4,15 +4,23 @@
  *  Created on: Jun 2, 2024
  *      Author: g0kla
  *
- * This allows the creating of a log file to store events.  The events are in binary and
- * as compact as possible.  They file is closed after each write but is stored in a temportary
+ * This allows the creating of a log file to store events.  The events are in binary to make them
+ * as compact as possible.  The file is closed after each write but is stored in a temportary
  * folder.  After a defined period the log is moved to the queue where it will be added to
  * the pacsat directory.
  *
  * This allows only one activity log to be created because the filename is static.
  *
- * At program start we check if there is a left over activity log and this is added to the
- * pacsat dir queue.  A new one is then started.
+ * There are four log event formats called ALOG_1, ALOG_1F, ALOG_2 and ALOG_2F.
+ * ALOG_1 is 9 bytes and contains event, length, date/time, 16 bits of data and the rx channel
+ * ALOG_1F is the full format and adds 6 32 bit data fields
+ * ALOG_2 is like ALOG_1 but adds a 6 byte callsign field and ssid.
+ * ALOG_2F adds 6 32 bit fields to ALOG_2
+ *
+ * To keep things even shorter, we do not pass the callsign for all FTL0 events if they are logged.  We
+ * pass a serial number in the login event and then use that to index the callsign/session in other events
+ *
+ * This means that log messages can be kept short but it does make it more complex.
  *
  */
 
@@ -37,32 +45,33 @@ static char *log_name_str[] = {
 	,"err"
 };
 
-static char *event_text[] = {
-	" ",
-	"STARTUP",
-	"SHUTDOWN",
-	"LOGIN",
-	"LOGOUT",
-	"BLOWOFF",
-	"REFUSED",
-	"BCST ON",
-	"BCST OFF",
-	"FREE DISK",
-	"DELETE",
-	"DOWNLOAD",
-	"UPLOAD",
-	"SHUT",
-	"OPEN",
-	"DIR",
-	"SELECT",
-	"ADEL OK",
-	"ADEL FAIL",
-	"DL DONE",
-	"UL DONE",
-	"DIR DONE",
-	"SEL DONE",
-	"IORS_ERR"
-	};
+/* This MUST match the enums for events in iors_log.h */
+//static char *event_text[] = {
+//	" ",
+//	"STARTUP",
+//	"SHUTDOWN",
+//	"LOGIN",
+//	"LOGOUT",
+//	"BLOWOFF",
+//	"REFUSED",
+//	"BCST ON",
+//	"BCST OFF",
+//	"FREE DISK",
+//	"DELETE",
+//	"DOWNLOAD",
+//	"UPLOAD",
+//	"SHUT",
+//	"OPEN",
+//	"DIR",
+//	"SELECT",
+//	"ADEL OK",
+//	"ADEL FAIL",
+//	"DL DONE",
+//	"UL DONE",
+//	"DIR DONE",
+//	"SEL DONE",
+//	"IORS_ERR"
+//	};
 
 /* Forward declarations */
 //void log_process_prev_file(char * log_folder, char *filename, int roll_logs_at_startup);
@@ -159,6 +168,9 @@ void log_err(char *filename, uint8_t error_code) {
 	log_append(filename, (uint8_t *)&log_event, log_event.len);
 }
 
+/*
+ * Store Log event
+ */
 void log_alog1(int level, char *filename, enum LOG_EVENT event_code, uint16_t var) {
 	if (level > log_level) return;
 	struct ALOG_1 log_event;
@@ -278,104 +290,38 @@ int log_add_to_directory(char * filename) {
 /**
  * Note, this can not read compressed logs
  */
-void log_debug_print(char * filename) {
-	char buffer[256];
-	struct ALOG_err *alog_err = (struct ALOG_err *)buffer;
-	FILE * infile=fopen(filename,"rb");
-	if (infile == NULL) {
-		return;
-	}
-	debug_print("IORS Activity Log\n");
-	debug_print("Timestamp            Event    Data\n");
-	while(1) {
-		int count = fread(buffer, 1, 2, infile);
-		if (count != 2) {
-			fclose(infile);
-			return; // we could not read from the infile, probablly at the end
-		}
-		if (alog_err->len != sizeof (struct ALOG_err)) {
-			debug_print("File is damaged 2\n");
-			return;
-		}
-		count = fread(buffer+2, 1, alog_err->len-2, infile);
-		if (count+2 != alog_err->len) {
-			debug_print("File is damaged 3\n");
-			return;
-		}
-		char buf[30];
-		time_t now = alog_err->tstamp;
-		strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", gmtime(&now));
-		if (alog_err->event > 0 && alog_err->event < ALOG_NUMBER_OF_EVENTS)
-			debug_print("%s  %s %d\n", buf, event_text[alog_err->event], alog_err->err_code);
-		else
-			debug_print("Unknown Event: %d\n",alog_err->event);
-	}
-	fclose(infile);
-}
-
-/*------------------------------------------------------------------------
-	Checks the type of record in the global alog structure and returns
-	an appropriate integer. Generally, this tells if the record type is
-	alog1 or alog2, though some other divisions have been introduced.
-
-	START_SESSION MUST RETURN 2
-	CONNECTED MODE OPERATIONS MUST RETURN 1
-	ADMINISTRATIVE OPERATIONS MUST RETURN 0
-
-	0 means data is stored in ALOG1F and is system generated??
-	1 means data is stored in ALOG1F
-	2 means data is stored in ALOG2F
-------------------------------------------------------------------------*/
-int alog_struct_type(enum LOG_EVENT event){
-
-	int type;
-
-	switch(event){
-
-		/* All of these have callsigns in them */
-		case ALOG_START_SESSION:
-		case ALOG_BCAST_START:
-		case ALOG_BCAST_STOP:
-		case ALOG_FILE_DELETE:
-		case ALOG_BBS_SHUT:
-		case ALOG_BBS_OPEN:
-			type = 2;
-		break;
-
-		/* These don't have or refer to callsigns. This is the */
-		/* group containing all automatic s/c generated events.*/
-		case ALOG_FTL0_STARTUP:
-		case ALOG_FTL0_SHUTDOWN:
-		case ALOG_DISKSPACE:
-		case ALOG_FILE_REMOVED:
-		case ALOG_FILE_NOT_REMOVED:
-			type = 0;
-		break;
-
-		/* All connected mode events */
-		case ALOG_CLOSE_SESSION:
-		case ALOG_DISCONNECT:
-		case ALOG_FILE_DOWNLOAD:
-		case ALOG_FILE_UPLOAD:
-		case ALOG_DIR:
-		case ALOG_SELECT:
-		case ALOG_END_DOWNLOAD:
-		case ALOG_END_UPLOAD:
-		case ALOG_END_DIR:
-		case ALOG_SELECT_DONE:
-			type = 1;
-		break;
-
-		/* Put refusals in a class by themselves, because they are anoying */
-		case ALOG_USER_REFUSED:
-			type = 4;
-		break;
-
-		default:
-			type = 3;
-		break;
-
-	}
-	return type;
-}
+//void log_debug_print(char * filename) {
+//	char buffer[256];
+//	struct ALOG_1 *alog_err = (struct ALOG_1 *)buffer;
+//	FILE * infile=fopen(filename,"rb");
+//	if (infile == NULL) {
+//		return;
+//	}
+//	debug_print("IORS Activity Log\n");
+//	debug_print("Timestamp            Event    Data\n");
+//	while(1) {
+//		int count = fread(buffer, 1, 2, infile);
+//		if (count != 2) {
+//			fclose(infile);
+//			return; // we could not read from the infile, probablly at the end
+//		}
+//		if (alog_err->len != sizeof (struct ALOG_1)) {
+//			debug_print("File is damaged 2\n");
+//			return;
+//		}
+//		count = fread(buffer+2, 1, alog_err->len-2, infile);
+//		if (count+2 != alog_err->len) {
+//			debug_print("File is damaged 3\n");
+//			return;
+//		}
+//		char buf[30];
+//		time_t now = alog_err->tstamp;
+//		strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", gmtime(&now));
+//		if (alog_err->event > 0 && alog_err->event < ALOG_NUMBER_OF_EVENTS)
+//			debug_print("%s  %s %d\n", buf, event_text[alog_err->event], alog_err->serial_no);
+//		else
+//			debug_print("Unknown Event: %d\n",alog_err->event);
+//	}
+//	fclose(infile);
+//}
 

@@ -28,35 +28,36 @@ enum LOG_NAME {
 	,NumberOfLogNames
 };
 
+/* If this is updated then LOG TEXT should be updated in iors_log.c */
 enum LOG_EVENT {
 	/* Initial event numbers are historical to match the PACSAT ALOG events */
-     ALOG_FTL0_STARTUP = 1		/* ftl0 startup */
-    ,ALOG_FTL0_SHUTDOWN 		/* ftl0 shutdown */
-    ,ALOG_START_SESSION 		/* user logon */
-    ,ALOG_CLOSE_SESSION 		/* user logout */
-    ,ALOG_DISCONNECT = 5		/* user timedout */
-    ,ALOG_USER_REFUSED 		/* user refused (max sessions) */
-    ,ALOG_BCAST_START  		/* added to list */
-    ,ALOG_BCAST_STOP 		/* removed from list */
-    ,ALOG_DISKSPACE 		/* free disk space */
-    ,ALOG_FILE_DELETE = 10		/* file deleted */
-    ,ALOG_FILE_DOWNLOAD 		/* file download */
-    ,ALOG_FILE_UPLOAD 		/* file upload */
-    ,ALOG_BBS_SHUT 		/* BBS is shut */
-    ,ALOG_BBS_OPEN 		/* BBS is open */
-    ,ALOG_DIR = 15			/* directory request */
-    ,ALOG_SELECT 		/* Select */
-    ,ALOG_FILE_REMOVED  /* Autodelete */
-    ,ALOG_FILE_NOT_REMOVED  /* Autodelete failed */
-    ,ALOG_END_DOWNLOAD 	/* End of download */
-    ,ALOG_END_UPLOAD = 20	/* End of download */
-    ,ALOG_END_DIR 				/* end of downloading dir file */
-    ,ALOG_SELECT_DONE 	/* End of select */
+     ALOG_IORS_STARTUP = 1		/* startup */
+	,ALOG_IORS_ERR              /* 1 - Error is passed in serial_no */
+	,ALOG_PROGRAM_EXIT       /* 1 - Exit code is in serial no */
+	,ALOG_COMMAND            /* 2F - command sent from the ground with ground station call and params */
+	,ALOG_DISKSPACE 		/* 1F  free disk space */
+	,ALOG_FS_STARTUP
+	,ALOG_FS_SHUTDOWN
+//    ,ALOG_FTL0_LOGIN 		/* 2 - user logon */
+//    ,ALOG_FTL0_LOGOUT 		/* 1F - user logout */
+//    ,ALOG_DISCONNECT = 5		/* 1F - FTL0 user timedout */
+//    ,ALOG_USER_REFUSED 		/* 1 - user refused (max sessions) */
+//    ,ALOG_BCAST_START  		/* 2F - added to list */
+//    ,ALOG_BCAST_STOP 		/* 2F -removed from list */
+//    ,ALOG_FILE_DELETE = 10		/* 1F - file deleted */
+//    ,ALOG_FILE_DOWNLOAD 		/* 1F - FTL0 file download - obsolete */
+//    ,ALOG_FILE_UPLOAD 		/* 1F - FTL0 file upload */
+//    ,ALOG_BBS_SHUT 		/* 2 - BBS is shut */
+//    ,ALOG_BBS_OPEN 		/* 2 - BBS is open */
+//    ,ALOG_DIR = 15			/* 1F - FTL0 directory request - obsolete */
+//    ,ALOG_SELECT 		/* 1F - FTL0 Select - obsolete*/
+//    ,ALOG_FILE_REMOVED  /* 1F - Autodelete */
+//    ,ALOG_FILE_NOT_REMOVED  /* Autodelete failed */
+//    ,ALOG_END_DOWNLOAD 	/* 1F - FTL0 End of download - obsolete*/
+//    ,ALOG_END_UPLOAD = 20	/* 1F - FTL0 End of upload */
+//    ,ALOG_END_DIR 				/* 1F - FTL0 end of downloading dir file - obsolete*/
+//    ,ALOG_SELECT_DONE 	/* 1F - End of select - obsolete*/
 
-	/* Events after this will not be decoded by historical ALOG program */
-	,ALOG_IORS_ERR = 23
-	,ALOG_PROGRAM_EXIT
-	,ALOG_COMMAND
 	,ALOG_NUMBER_OF_EVENTS
 };
 
@@ -73,28 +74,24 @@ enum IORS_LOG_ERRORS {
 	,IORS_ERR_SSTV_FAILURE
 	,IORS_ERR_PACSAT_FAILURE
 	,IORS_ERR_DIREWOLF_FAILURE
-	,IORS_ERR_PTT_FAILURE
+	,IORS_ERR_PTT_FAILURE = 10
 	,IORS_ERR_TNC_FAILURE
 	,IORS_ERR_CREW_INT_FAILURE
 	,IORS_ERR_SETTING_RADIO_MODE
 	,IORS_ERR_NUMBER_OF_ERRORS
+
+	// FS ERRORS
+	,IORS_ERR_FS_DIR_LOAD_FAILURE = 15
+	,IORS_ERR_FS_TNC_FAILURE
 };
 
 
 /* Every entry has an ALOG Header*/
-struct ALOG_err {
-	uint8_t event;		/* event code */
-	uint8_t len;		    /* length of entry including the header */
-	uint32_t tstamp;			/* time stamp */
-	uint8_t err_code;		/* error code to be saved in log for this event */
-};
-
-/* Historical ALOG structures */
 struct ALOG_1 {
 	uint8_t event;		/* event code */
 	uint8_t len;		/* length of entry */
 	uint32_t tstamp;		/* time stamp */
-	uint16_t serial_no;		/* serial number */
+	uint16_t serial_no;		/* serial number or other data for this event */
 	uint8_t rxchan;		/* rx channel */
 } __attribute__ ((__packed__));
 
