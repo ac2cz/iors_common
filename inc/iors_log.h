@@ -38,6 +38,7 @@ enum LOG_EVENT {
 	,ALOG_DISKSPACE 		/* 1F  free disk space */
 	,ALOG_FS_STARTUP
 	,ALOG_FS_SHUTDOWN
+	,ALOG_IORS_LOG_LEVEL  // 1 serial no is the level
 //    ,ALOG_FTL0_LOGIN 		/* 2 - user logon */
 //    ,ALOG_FTL0_LOGOUT 		/* 1F - user logout */
 //    ,ALOG_DISCONNECT = 5		/* 1F - FTL0 user timedout */
@@ -78,6 +79,7 @@ enum IORS_LOG_ERRORS {
 	,IORS_ERR_TNC_FAILURE
 	,IORS_ERR_CREW_INT_FAILURE
 	,IORS_ERR_SETTING_RADIO_MODE
+	,IORS_ERR_CHECKING_DISK_SPACE
 	,IORS_ERR_NUMBER_OF_ERRORS
 
 	// FS ERRORS
