@@ -81,6 +81,7 @@ typedef enum {
 	,SWCmdOpsSSTVStop = 22
 	,SWCmdOpsSSTVPreProcess = 23
 	,SWCmdOpsChangeCommandKey = 25
+	,SWCmdOpsHdmiImageDisplay
     ,SWCmdOpsNumberOfCommands
 }SWOpsCommands;
 
