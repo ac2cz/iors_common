@@ -108,6 +108,7 @@ typedef enum {
 	,SWCmdPacsatFileQueueCheckPeriod = 10         // in seconds - Check all the queues for files to add to the dir
 	,SWCmdPacsatMaxFileSize				// Set the max upload file size in kb
 	,SWCmdPacsatMaxUploadAge			// Set the max age for a file being uploaded.  After this time it is removed from upload queue
+	,SwCmdPacsatExecuteFile             // Run the file as though it is a script or executable.  If it is not in bin, extract it.
 	,SwCmdPacsatNumberOfCommands
 }SWPacsatCommands;
 
@@ -123,8 +124,18 @@ typedef enum {
 	,FolderCfg
 	,FolderDir
 	,FolderUpload
-	,FolderWod
-	,FolderLog
+	,FolderWod  // Any file put in this folder will be automaticalled added to the dir as an WOD File
+	,FolderLog  // Any file put in this folder will be automaticalled added to the dir as an ALOG File
+	,FolderTxt  // Any file put in this folder will be automaticalled added to the dir as an ASCII File
+	,FolderData1
+	,FolderData2
+	,FolderData3
+	,FolderData4
+	,FolderData5
+	,FolderData6
+	,FolderData7
+	,FolderData8
+	,FolderData9
 	,NumberOfFolderIds
 } FolderIds;
 
