@@ -29,7 +29,7 @@ char *FolderIdStrings[] = {
 		,"sstv_q2"
 		,"sstv_q3"
 		,"orbital_positions"
-		,"bin"
+		,"bin" //4
 		,"lib"
 		,"cfg"
 		,"pacsat/dir"
@@ -58,7 +58,7 @@ char *NameSpaceStrings[] = {
 
 /* This gives user understandable names for the OPS Commands.  It must match the enum in iors_command.h */
 char *OpsCommandStrings[] = {
-		"nop"
+		"reserved"
 		,"pm1"
 		,"xband"
 		,"aprs"
@@ -82,10 +82,26 @@ char *OpsCommandStrings[] = {
 		,"sstv-loop"
 		,"sstv-stop"
 		,"sstv-pre"
-		,"cmd-key"
 		,"nop"
+		,"cmd-key"
+		,"hdmi"
 };
-
+char *PacsatCommandStrings[] = {
+		"reserved"
+		,"pb"
+		,"uplink"
+		,"install"
+		,"del" // 4
+		,"del-folder" // 5
+		,"default-file-exp-period"
+		,"file-exp-period"
+		,"dir-maint-period"
+		,"up-maint-period"
+		,"que-chk-period" // 10
+		,"max-file-size"
+		,"max-upload-age"
+		,"exec-file" //13
+};
 
 int SymbolRates[] = {
 		1200
@@ -126,6 +142,14 @@ int get_command_from_str(SWCommandNameSpace name_space, char * cmd) {
 		int i = 0;
 		for (i = 0; i < SWCmdOpsNumberOfCommands; i++) {
 			if (strcasecmp(cmd, OpsCommandStrings[i]) == 0) {
+				return i;
+			}
+		}
+	}
+	if (name_space == SWCmdNSPacsat) {
+		int i = 0;
+		for (i = 0; i < SwCmdPacsatNumberOfCommands; i++) {
+			if (strcasecmp(cmd, PacsatCommandStrings[i]) == 0) {
 				return i;
 			}
 		}
