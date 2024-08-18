@@ -83,6 +83,7 @@ typedef enum {
 	,SWCmdOpsNoOp = 24
 	,SWCmdOpsChangeCommandKey = 25
 	,SWCmdOpsHdmiImageDisplay
+	,SWCmdOpsLogsLevel
     ,SWCmdOpsNumberOfCommands
 }SWOpsCommands;
 
