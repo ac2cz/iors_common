@@ -86,14 +86,11 @@ int log_append(char *filename, uint8_t * data, int len);
  * a .tmp file until it is ready to be added to the directory.
  *
  */
-int log_init(char *prefix, char *folder, char *filename, int roll_logs_at_startup) {
+int log_init(char *prefix, char *folder, char *filename) {
 	strlcpy(filename, folder, MAX_FILE_PATH_LEN);
 	strlcat(filename,"/",MAX_FILE_PATH_LEN);
 	strlcat(filename,prefix,MAX_FILE_PATH_LEN); // put the folder as the first part of the name too
 
-	if (roll_logs_at_startup) {
-		log_add_to_directory(filename);
-	}
 //	/* Process any previous logs left over from a crash or other situation */
 //	log_process_prev_file(folder, filename, roll_logs_at_startup);
 
