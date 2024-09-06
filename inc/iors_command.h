@@ -120,6 +120,12 @@ typedef enum {
 	FolderSSTVQueue1 = 0
 	,FolderSSTVQueue2
 	,FolderSSTVQueue3
+	,FolderSSTVQueue4
+	,FolderSSTVQueue5
+	,FolderSSTVQueue6
+	,FolderSSTVQueue7
+	,FolderSSTVQueue8
+	,FolderSSTVQueue9
 	,FolderOrbitalPositions
 	,FolderBin
 	,FolderLib

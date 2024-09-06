@@ -28,6 +28,12 @@ char *FolderIdStrings[] = {
 		"sstv_q1"
 		,"sstv_q2"
 		,"sstv_q3"
+		,"sstv_q4"
+		,"sstv_q5"
+		,"sstv_q6"
+		,"sstv_q7"
+		,"sstv_q8"
+		,"sstv_q9"
 		,"orbital_positions"
 		,"bin" //4
 		,"lib"
