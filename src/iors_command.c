@@ -19,6 +19,7 @@ int load_last_command_time();
 int store_last_command_time();
 int CommandTimeOK(uint32_t dateTime);
 
+char last_command_time_path[MAX_FILE_PATH_LEN] = "pacsat_last_command_time.dat";
 static uint32_t last_command_time = 0x0; /* Keep track of the time that the last command was received */
 static SWCmdUplink last_command;
 
@@ -118,8 +119,7 @@ SWCmdUplink *get_last_command() {
 	return &last_command;
 }
 
-void init_commanding(char * last_command_time_file) {
-	strlcpy(g_iors_last_command_time_path, last_command_time_file, sizeof(g_iors_last_command_time_path));
+void init_commanding() {
 	load_last_command_time();
 }
 
@@ -164,7 +164,7 @@ int get_command_from_str(SWCommandNameSpace name_space, char * cmd) {
 }
 
 int load_last_command_time() {
-	FILE * fd = fopen(g_iors_last_command_time_path, "r");
+	FILE * fd = fopen(last_command_time_path, "r");
 	if (fd == NULL) {
 		// no command time file, make a new one
 		store_last_command_time();
@@ -182,7 +182,7 @@ int load_last_command_time() {
 
 int store_last_command_time() {
 	char tmp_filename[MAX_FILE_PATH_LEN];
-	strlcpy(tmp_filename, g_iors_last_command_time_path, sizeof(tmp_filename));
+	strlcpy(tmp_filename, last_command_time_path, sizeof(tmp_filename));
 	strlcat(tmp_filename, ".tmp", sizeof(tmp_filename));
 	FILE * fd = fopen(tmp_filename, "w");
 	if (fd == NULL) {
@@ -200,7 +200,7 @@ int store_last_command_time() {
 	fclose(fd);
 	/* Use rename as the last step so that we get the whole new file or stay with the old.  If
 	 * we crash here then we are safer with the last previous command time than with no previous command time. */
-	rename(tmp_filename, g_iors_last_command_time_path);
+	rename(tmp_filename, last_command_time_path);
 	return EXIT_SUCCESS;
 }
 

@@ -16,14 +16,13 @@
 #include <stdint.h>
 
 #define ENCRYPTION_KEY_MAGIC_VALUE 0x71539172 /* Random value unlikely to be there by default */
-
 #define AUTH_KEY_SIZE 32
 
 extern uint8_t hmac_sha_key[AUTH_KEY_SIZE];
 
 uint32_t key_checksum(uint8_t *key);
 
-int key_load(char *);
+int key_load(char * key_path);
 int test_key_save(char * key_path);
 
 #endif /* KEYFILE_H_ */

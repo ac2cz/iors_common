@@ -173,7 +173,7 @@ typedef enum {
 	,Robot24BW
 } SSTVModes;
 
-void init_commanding(char * last_command_time_file);
+void init_commanding();
 char * get_folder_str(FolderIds i);
 int get_symbol_rates(SymbolRateIds i);
 int get_namespace_from_str(char *name_space);

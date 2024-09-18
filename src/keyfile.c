@@ -10,8 +10,8 @@
 #include "common_config.h"
 #include "keyfile.h"
 
-/* The default key, overwritten from keyfile if it exists, at startup. */
 
+/* The default key, overwritten from keyfile if it exists, at startup. */
 uint8_t hmac_sha_key[AUTH_KEY_SIZE] = {
     0x49, 0xc2, 0x90, 0x2e, 0x9d, 0x99, 0x32,
     0xf0, 0x9a, 0x09, 0x32, 0xb9, 0x8c, 0x09,
@@ -28,16 +28,18 @@ uint32_t key_checksum(uint8_t *key) {
     return checksum;
 }
 
+
 /**
  * Load the key from a file.  If the key is corrupt or we can not load it
  * then use the default key
  *
- * TODO - add a checksum to make sure the key has integrity
+ * TODO - add a checksum to make sure the key has integrity - could be part of more general check for our files
  *
  * TODO - If the file is corrupt or does not work and we were trying to use file on the
  * USB drive then fall back to the SD card copy
  */
 int key_load(char * key_path) {
+	debug_print("Loading keyfile: %s\n",key_path);
     uint8_t key[AUTH_KEY_SIZE];
 
     FILE * f = fopen(key_path, "r");
@@ -52,7 +54,6 @@ int key_load(char * key_path) {
     	return EXIT_FAILURE; // nothing was read
     }
 
-    debug_print("Loaded keyfile: %s\n",key_path);
     memcpy(hmac_sha_key, key, AUTH_KEY_SIZE);
     return EXIT_SUCCESS;
 }
