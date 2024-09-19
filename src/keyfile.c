@@ -19,6 +19,14 @@ uint8_t hmac_sha_key[AUTH_KEY_SIZE] = {
     0xc8, 0x9e, 0x98, 0xd7, 0x9f, 0x98, 0x7e
 };
 
+/* Test key 1 */
+uint8_t hmac_sha_key1[AUTH_KEY_SIZE] = {
+    0x19, 0x72, 0x20, 0x2e, 0xbd, 0x49, 0x12,
+    0x10, 0x8a, 0x03, 0x62, 0xb9, 0x5c, 0x19,
+    0x1e, 0x18, 0xa3, 0x50, 0xb0, 0x48, 0x42,
+    0x18, 0x2e, 0x28, 0xd7, 0xbf, 0x38, 0x2e
+};
+
 uint32_t key_checksum(uint8_t *key) {
     unsigned int i;
     uint32_t checksum = 0;
@@ -63,7 +71,7 @@ int test_key_save(char * key_path) {
 	if (outfile == NULL) return EXIT_FAILURE;
 
 	for (int i=0; i<AUTH_KEY_SIZE; i++) {
-		int c = fputc(hmac_sha_key[i],outfile);
+		int c = fputc(hmac_sha_key1[i],outfile);
 		if (c == EOF) {
 			fclose(outfile);
 			return EXIT_FAILURE; // we could not write to the file
