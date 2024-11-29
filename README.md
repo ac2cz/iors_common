@@ -1,4 +1,4 @@
-#Common files needed for pi_pacsat and other projects
+# Common files needed for pi_pacsat and other projects
 To build this: 
 clone the repository
 cd to the Debug folder
